@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { doc, getDoc, setDoc, collection, getDocs, updateDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, collection, getDocs, updateDoc, deleteDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { Plus, X, Save, Settings, Trash2, Layers, Briefcase, Database, Users, Mail, AlertCircle, CheckCircle2 } from "lucide-react";
@@ -477,6 +477,17 @@ function TeamManager() {
     }
   };
 
+  const removeUser = async (uid: string) => {
+    if (!confirm("Are you sure you want to remove this teammate? They will lose access to the CRM immediately.")) return;
+    try {
+      await deleteDoc(doc(db, "users", uid));
+      setUsers(users.filter(u => u.uid !== uid));
+      toast.success("Teammate removed successfully");
+    } catch (err) {
+      toast.error("Failed to remove teammate");
+    }
+  };
+
   if (loading) return (
     <div className="border border-slate-200 rounded-xl overflow-hidden p-8 flex justify-center">
       <div className="animate-pulse text-sm text-slate-500">Loading team directory...</div>
@@ -490,6 +501,7 @@ function TeamManager() {
           <tr>
             <th className="px-6 py-4 w-1/2">User Identity</th>
             <th className="px-6 py-4">Security Role</th>
+            <th className="px-6 py-4 text-right">Actions</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-100 bg-white">
@@ -515,6 +527,15 @@ function TeamManager() {
                     <option value="junior">Junior Analyst (Assigned Only)</option>
                   </select>
                 </div>
+              </td>
+              <td className="px-6 py-4 text-right">
+                <button 
+                  onClick={() => removeUser(u.uid)}
+                  className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                  title="Remove Teammate"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
               </td>
             </tr>
           ))}
