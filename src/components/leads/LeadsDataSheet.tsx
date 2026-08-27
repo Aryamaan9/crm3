@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { DataSheetGrid, textColumn, keyColumn, isoDateColumn } from 'react-datasheet-grid';
 import 'react-datasheet-grid/dist/style.css';
-import { Timestamp, doc, updateDoc, addDoc, collection } from 'firebase/firestore';
+import { Timestamp, doc, updateDoc, addDoc, deleteDoc, collection } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import toast from 'react-hot-toast';
 import { useAuth } from '@/context/AuthContext';
@@ -46,22 +46,29 @@ export function LeadsDataSheet({ leads, setLeads, columns, settings }: any) {
 
   // Handle updates
   const handleChange = async (newData: any[]) => {
-    // Determine what changed
-    // react-datasheet-grid passes the entire new array
     const oldLeads = [...leads];
-    
-    // We will do optimistic UI updates but we also need to fire off Firebase updates
-    // For simplicity, we can find the diffs
-    const promises = [];
-    const updatedLeads = [];
-    
+    const promises: any[] = [];
+    const updatedLeads: any[] = [];
     let hasError = false;
 
+    // 1. Detect and handle deletions
+    const newIds = new Set(newData.map(n => n.id).filter(Boolean));
+    oldLeads.forEach(oldLead => {
+      if (!newIds.has(oldLead.id)) {
+        promises.push(
+          deleteDoc(doc(db, "leads", oldLead.id)).catch(e => {
+            console.error("Failed to delete doc", e);
+            hasError = true;
+          })
+        );
+      }
+    });
+
+    // 2. Process new or updated rows
     for (let i = 0; i < newData.length; i++) {
       const newRow = newData[i];
-      const oldRow = oldLeads[i];
       
-      if (!oldRow) {
+      if (!newRow.id) {
         // It's a new row!
         const newDocData = {
           ...newRow,
@@ -82,7 +89,13 @@ export function LeadsDataSheet({ leads, setLeads, columns, settings }: any) {
           })
         );
       } else {
-        // Existing row, check for diffs
+        // Existing row, locate it in oldLeads by ID
+        const oldRow = oldLeads.find(l => l.id === newRow.id);
+        if (!oldRow) {
+           updatedLeads.push(newRow);
+           continue; // Should not happen in normal flows
+        }
+
         const updates: any = {};
         let changed = false;
         
