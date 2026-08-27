@@ -9,22 +9,31 @@ import { useAuth } from '@/context/AuthContext';
 export function LeadsDataSheet({ leads, setLeads, columns, settings }: any) {
   const { user } = useAuth();
   
+  // Map internal grid column shorthands to actual Firestore field names
+  const FIELD_MAP: Record<string, string> = {
+    'org': 'organization',
+    'type': 'investorType',
+    'stage': 'leadStage',
+    'interaction': 'lastInteraction',
+    'followup': 'followUpDate',
+    'owner': 'primaryOwner'
+  };
+
   // Transform columns into react-datasheet-grid columns
   const gridColumns = useMemo(() => {
     return columns.filter((c: any) => c.visible).map((c: any) => {
-      // By default use textColumn
       let colType = textColumn;
+      const fieldKey = FIELD_MAP[c.id] || c.id;
       
       // Determine if it's a date
-      if (c.id === 'followup' || c.id === 'interaction') {
-        colType = isoDateColumn; // We might need to map firebase timestamps to ISO dates
+      if (fieldKey === 'followUpDate' || fieldKey === 'lastInteraction') {
+        colType = isoDateColumn;
       }
 
       return {
-        ...keyColumn(c.id, colType),
+        ...keyColumn(fieldKey, colType),
         title: c.label,
-        // Make readOnly if it's owner or interaction
-        disabled: c.id === 'owner' || c.id === 'interaction'
+        disabled: fieldKey === 'primaryOwner' || fieldKey === 'lastInteraction'
       };
     });
   }, [columns]);
@@ -34,11 +43,11 @@ export function LeadsDataSheet({ leads, setLeads, columns, settings }: any) {
   const gridData = useMemo(() => {
     return leads.map((lead: any) => {
       const row = { ...lead };
-      if (row.followup?.toDate) {
-        row.followup = row.followup.toDate().toISOString().split('T')[0];
+      if (row.followUpDate?.toDate) {
+        row.followUpDate = row.followUpDate.toDate().toISOString().split('T')[0];
       }
-      if (row.interaction?.toDate) {
-        row.interaction = row.interaction.toDate().toISOString().split('T')[0];
+      if (row.lastInteraction?.toDate) {
+        row.lastInteraction = row.lastInteraction.toDate().toISOString().split('T')[0];
       }
       return row;
     });
@@ -93,7 +102,7 @@ export function LeadsDataSheet({ leads, setLeads, columns, settings }: any) {
         const oldRow = oldLeads.find(l => l.id === newRow.id);
         if (!oldRow) {
            updatedLeads.push(newRow);
-           continue; // Should not happen in normal flows
+           continue; 
         }
 
         const updates: any = {};
@@ -103,7 +112,7 @@ export function LeadsDataSheet({ leads, setLeads, columns, settings }: any) {
           if (key === 'id') return;
           if (newRow[key] !== oldRow[key]) {
              // Basic date handling
-             if (key === 'followup' || key === 'interaction') {
+             if (key === 'followUpDate' || key === 'lastInteraction') {
                 if (newRow[key] && typeof newRow[key] === 'string') {
                    const d = new Date(newRow[key]);
                    if (!isNaN(d.getTime())) {
