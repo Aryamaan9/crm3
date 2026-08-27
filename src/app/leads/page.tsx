@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { collection, query, where, getDocs, addDoc, Timestamp, doc, getDoc, updateDoc } from "firebase/firestore";
+import { collection, query, where, getDocs, addDoc, Timestamp, doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { AddLeadModal } from "@/components/leads/AddLeadModal";
-import { Plus, Search, Filter, Download, Upload, LayoutGrid, ArrowUp, ArrowDown, EyeOff, Eye, Table } from "lucide-react";
+import { Plus, Search, Filter, Download, Upload, LayoutGrid, ArrowUp, ArrowDown, EyeOff, Eye, Table, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import toast from "react-hot-toast";
 import { LeadSlideOver } from "@/components/leads/LeadSlideOver";
@@ -127,6 +127,114 @@ export default function LeadsPage() {
     a.href = url;
     a.download = `leads_export_${format(new Date(), 'yyyy-MM-dd')}.csv`;
     a.click();
+  };
+  
+  const handleDeleteLead = async (leadId: string) => {
+    if (!confirm("Are you sure you want to delete this row? This action cannot be undone.")) return;
+    try {
+      await deleteDoc(doc(db, "leads", leadId));
+      setLeads(leads.filter(l => l.id !== leadId));
+      toast.success("Row deleted successfully");
+    } catch (err) {
+      toast.error("Failed to delete row");
+    }
+  };
+
+  const handleTablePaste = async (e: React.ClipboardEvent) => {
+    const activeEl = document.activeElement;
+    if (!activeEl) return;
+    const coord = activeEl.getAttribute("data-coord");
+    if (!coord) return;
+
+    const clipboardData = e.clipboardData;
+    const text = clipboardData.getData("text/plain");
+    if (!text) return;
+
+    const cleanText = text.replace(/\r\n$/, '').replace(/\n$/, '');
+    if (!cleanText.includes('\t') && !cleanText.includes('\n')) {
+      return; 
+    }
+
+    e.preventDefault();
+
+    const [startRowStr, startColStr] = coord.split('-');
+    const startRow = parseInt(startRowStr, 10);
+    const startCol = parseInt(startColStr, 10);
+
+    const rows = cleanText.split(/\r?\n/).map(row => row.split('\t'));
+    const visibleCols = columns.filter(c => c.visible);
+    const newLeads = [...leads];
+    const promises = [];
+
+    for (let r = 0; r < rows.length; r++) {
+      const rowData = rows[r];
+      const targetRowIdx = startRow + r;
+      
+      let leadUpdates: any = {};
+      let isNewLead = targetRowIdx >= newLeads.length;
+      
+      const targetLead = isNewLead ? { 
+          firstName: "", lastName: "", organization: "", email: "", 
+          investorType: settings?.investorTypes?.[0] || "",
+          leadStage: settings?.leadStages?.[0] || "",
+      } : { ...newLeads[targetRowIdx] };
+
+      for (let c = 0; c < rowData.length; c++) {
+        const val = rowData[c];
+        const targetColIdx = startCol + c;
+        if (targetColIdx >= visibleCols.length) continue; 
+
+        const col = visibleCols[targetColIdx];
+        if (col.id === 'interaction' || col.id === 'owner') continue;
+        
+        let finalVal: any = val;
+        if (col.id === 'followup') {
+           const d = new Date(val);
+           if (!isNaN(d.getTime())) finalVal = Timestamp.fromDate(d);
+           else continue;
+        } else {
+           const customFieldDef = settings?.customFields?.find((cf: any) => cf.id === col.id);
+           if (customFieldDef?.type === 'number') {
+              finalVal = Number(val) || 0;
+           } else if (customFieldDef?.type === 'date') {
+              const d = new Date(val);
+              if (!isNaN(d.getTime())) finalVal = Timestamp.fromDate(d);
+              else continue;
+           }
+        }
+        
+        targetLead[col.id] = finalVal;
+        leadUpdates[col.id] = finalVal;
+      }
+
+      if (Object.keys(leadUpdates).length === 0 && !isNewLead) continue;
+
+      if (isNewLead) {
+        const newDocData = {
+           ...targetLead,
+           lastInteraction: Timestamp.now(),
+           primaryOwner: user?.uid,
+           createdAt: Timestamp.now()
+        };
+        promises.push(
+          addDoc(collection(db, "leads"), newDocData).then(ref => {
+            newLeads[targetRowIdx] = { id: ref.id, ...newDocData };
+          })
+        );
+      } else {
+        newLeads[targetRowIdx] = targetLead;
+        promises.push(updateDoc(doc(db, "leads", targetLead.id), leadUpdates));
+      }
+    }
+
+    toast.loading("Pasting data...", { id: 'paste' });
+    try {
+       await Promise.all(promises);
+       setLeads(newLeads);
+       toast.success("Paste successful!", { id: 'paste' });
+    } catch (err) {
+       toast.error("Error pasting some rows", { id: 'paste' });
+    }
   };
 
   const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -447,14 +555,14 @@ export default function LeadsPage() {
             <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs font-semibold sticky top-0 z-10">
               <tr>
                 <th className="px-6 py-4 w-10">
-                  <input type="checkbox" className="rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                  {isExcelMode ? '' : <input type="checkbox" className="rounded border-slate-300 text-blue-600 focus:ring-blue-500" />}
                 </th>
                 {columns.filter(c => c.visible).map(c => (
                   <th key={c.id} className="px-6 py-4">{c.label}</th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100" onPaste={isExcelMode ? handleTablePaste : undefined}>
               {loading ? (
                 <tr>
                   <td colSpan={columns.filter(c => c.visible).length + 1} className="px-6 py-8 text-center text-slate-500">Loading leads...</td>
@@ -473,7 +581,13 @@ export default function LeadsPage() {
                     className={`${isExcelMode ? 'bg-white' : 'hover:bg-slate-50 transition-colors cursor-pointer'}`}
                   >
                     <td className="px-6 py-2" onClick={e => e.stopPropagation()}>
-                      <input type="checkbox" className="rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                      {isExcelMode ? (
+                        <button onClick={() => handleDeleteLead(lead.id)} className="text-slate-400 hover:text-red-500 p-1 rounded hover:bg-red-50 transition-colors" title="Delete Row">
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      ) : (
+                        <input type="checkbox" className="rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                      )}
                     </td>
                     {columns.filter(c => c.visible).map((c, colIndex) => (
                       <td key={c.id} className={`px-0 py-0 ${isExcelMode ? 'border-r border-slate-100 last:border-r-0' : 'px-6 py-4'}`}>
