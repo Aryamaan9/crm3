@@ -9,7 +9,7 @@ import { Plus, Search, Filter, Download, Upload, LayoutGrid, ArrowUp, ArrowDown,
 import { format } from "date-fns";
 import toast from "react-hot-toast";
 import { LeadSlideOver } from "@/components/leads/LeadSlideOver";
-import { ExcelCell } from "@/components/leads/ExcelCell";
+import { LeadsDataSheet } from "@/components/leads/LeadsDataSheet";
 
 type ColumnDef = { id: string; label: string; visible: boolean };
 
@@ -577,64 +577,57 @@ export default function LeadsPage() {
 
       {/* Table */}
       <div className={`bg-white border border-slate-200 rounded-xl shadow-sm flex-1 overflow-hidden flex flex-col ${isExcelMode ? 'ring-2 ring-blue-500/20' : ''}`}>
-        <div className="overflow-x-auto flex-1">
-          <table className="w-full text-left text-sm whitespace-nowrap">
-            <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs font-semibold sticky top-0 z-10">
-              <tr>
-                <th className="px-6 py-4 w-10">
-                  {isExcelMode ? '' : <input type="checkbox" className="rounded border-slate-300 text-blue-600 focus:ring-blue-500" />}
-                </th>
-                {columns.filter(c => c.visible).map(c => (
-                  <th key={c.id} className="px-6 py-4">{c.label}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100" onPaste={isExcelMode ? handleTablePaste : undefined}>
-              {loading ? (
+        {isExcelMode ? (
+          <LeadsDataSheet 
+            leads={filteredLeads} 
+            setLeads={setLeads}
+            columns={columns}
+            settings={settings}
+          />
+        ) : (
+          <div className="overflow-x-auto flex-1">
+            <table className="w-full text-left text-sm whitespace-nowrap">
+              <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs font-semibold sticky top-0 z-10">
                 <tr>
-                  <td colSpan={columns.filter(c => c.visible).length + 1} className="px-6 py-8 text-center text-slate-500">Loading leads...</td>
+                  <th className="px-6 py-4 w-10">
+                    <input type="checkbox" className="rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                  </th>
+                  {columns.filter(c => c.visible).map(c => (
+                    <th key={c.id} className="px-6 py-4">{c.label}</th>
+                  ))}
                 </tr>
-              ) : filteredLeads.length === 0 ? (
-                <tr>
-                  <td colSpan={columns.filter(c => c.visible).length + 1} className="px-6 py-12 text-center text-slate-500">
-                    No leads found matching criteria.
-                  </td>
-                </tr>
-              ) : (
-                filteredLeads.map((lead, rowIndex) => (
-                  <tr 
-                    key={lead.id} 
-                    onClick={() => handleRowClick(lead)} 
-                    className={`${isExcelMode ? 'bg-white' : 'hover:bg-slate-50 transition-colors cursor-pointer'}`}
-                  >
-                    <td className="px-6 py-2" onClick={e => e.stopPropagation()}>
-                      {isExcelMode ? (
-                        <button onClick={() => handleDeleteLead(lead.id)} className="text-slate-400 hover:text-red-500 p-1 rounded hover:bg-red-50 transition-colors" title="Delete Row">
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      ) : (
-                        <input type="checkbox" className="rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
-                      )}
-                    </td>
-                    {columns.filter(c => c.visible).map((c, colIndex) => (
-                      <td key={c.id} className={`px-0 py-0 ${isExcelMode ? 'border-r border-slate-100 last:border-r-0' : 'px-6 py-4'}`}>
-                        {isExcelMode ? renderExcelModeCell(lead, c, rowIndex, colIndex) : renderCell(lead, c.id)}
-                      </td>
-                    ))}
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {loading ? (
+                  <tr>
+                    <td colSpan={columns.filter(c => c.visible).length + 1} className="px-6 py-8 text-center text-slate-500">Loading leads...</td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-        {isExcelMode && (
-          <div className="p-2 border-t border-slate-200 bg-slate-50">
-            <button 
-              onClick={handleAddExcelRow}
-              className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-200 rounded transition-colors"
-            >
-              <Plus className="w-3.5 h-3.5" /> Add Row
-            </button>
+                ) : filteredLeads.length === 0 ? (
+                  <tr>
+                    <td colSpan={columns.filter(c => c.visible).length + 1} className="px-6 py-12 text-center text-slate-500">
+                      No leads found matching criteria.
+                    </td>
+                  </tr>
+                ) : (
+                  filteredLeads.map((lead, rowIndex) => (
+                    <tr 
+                      key={lead.id} 
+                      onClick={() => handleRowClick(lead)} 
+                      className="hover:bg-slate-50 transition-colors cursor-pointer"
+                    >
+                      <td className="px-6 py-2" onClick={e => e.stopPropagation()}>
+                        <input type="checkbox" className="rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                      </td>
+                      {columns.filter(c => c.visible).map((c, colIndex) => (
+                        <td key={c.id} className="px-6 py-4">
+                          {renderCell(lead, c.id)}
+                        </td>
+                      ))}
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
         )}
       </div>
