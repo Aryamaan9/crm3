@@ -1,24 +1,28 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { collection, query, where, getDocs, addDoc, Timestamp, doc, getDoc } from "firebase/firestore";
+import { collection, query, where, getDocs, addDoc, Timestamp, doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { AddLeadModal } from "@/components/leads/AddLeadModal";
-import { Plus, Search, Filter, Download, Upload, LayoutGrid, ArrowUp, ArrowDown, EyeOff, Eye } from "lucide-react";
+import { Plus, Search, Filter, Download, Upload, LayoutGrid, ArrowUp, ArrowDown, EyeOff, Eye, Table } from "lucide-react";
 import { format } from "date-fns";
 import toast from "react-hot-toast";
+import { LeadSlideOver } from "@/components/leads/LeadSlideOver";
+import { ExcelCell } from "@/components/leads/ExcelCell";
 
 type ColumnDef = { id: string; label: string; visible: boolean };
-
-import { LeadSlideOver } from "@/components/leads/LeadSlideOver";
 
 export default function LeadsPage() {
   const { user, profile } = useAuth();
   const [leads, setLeads] = useState<any[]>([]);
+  const [filteredLeads, setFilteredLeads] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   
+  // Excel Mode state
+  const [isExcelMode, setIsExcelMode] = useState(false);
+
   // Slide over state
   const [selectedLead, setSelectedLead] = useState<any>(null);
   const [isSlideOverOpen, setIsSlideOverOpen] = useState(false);
@@ -33,6 +37,8 @@ export default function LeadsPage() {
 
   const [showColsMenu, setShowColsMenu] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const colsMenuRef = useRef<HTMLDivElement>(null);
+  const filterMenuRef = useRef<HTMLDivElement>(null);
 
   const [columns, setColumns] = useState<ColumnDef[]>([
     { id: 'firstName', label: 'First Name', visible: true },
@@ -50,12 +56,10 @@ export default function LeadsPage() {
     if (!user || !profile) return;
     setLoading(true);
     try {
-      // Fetch settings
       const snap = await getDoc(doc(db, "settings", "global"));
       let globalSettings = snap.exists() ? snap.data() : null;
       setSettings(globalSettings);
 
-      // Inject custom fields into columns if not present
       if (globalSettings?.customFields) {
         setColumns(prev => {
           const newCols = [...prev];
@@ -68,7 +72,6 @@ export default function LeadsPage() {
         });
       }
 
-      // Fetch leads
       let q: any = collection(db, "leads");
       if (profile.role === "junior") {
         q = query(q, where("primaryOwner", "==", user.uid));
@@ -87,7 +90,29 @@ export default function LeadsPage() {
     fetchData();
   }, [user, profile]);
 
-  // Export Logic
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (colsMenuRef.current && !colsMenuRef.current.contains(event.target as Node)) {
+        setShowColsMenu(false);
+      }
+      if (filterMenuRef.current && !filterMenuRef.current.contains(event.target as Node)) {
+        setShowFilterMenu(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    const res = leads.filter(lead => {
+      const matchesSearch = !searchQuery || 
+        `${lead.firstName} ${lead.lastName} ${lead.organization} ${lead.email}`.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesStage = stageFilter === 'All' || lead.leadStage === stageFilter;
+      return matchesSearch && matchesStage;
+    });
+    setFilteredLeads(res);
+  }, [leads, searchQuery, stageFilter]);
+
   const handleExport = () => {
     const visibleCols = columns.filter(c => c.visible);
     const headers = visibleCols.map(c => c.label);
@@ -104,7 +129,6 @@ export default function LeadsPage() {
     a.click();
   };
 
-  // Import Logic
   const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -139,7 +163,6 @@ export default function LeadsPage() {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  // Column Reordering Logic
   const moveColumn = (index: number, direction: 'up' | 'down') => {
     const newCols = [...columns];
     const targetIndex = direction === 'up' ? index - 1 : index + 1;
@@ -164,7 +187,7 @@ export default function LeadsPage() {
       case 'followup': return lead.followUpDate ? format(lead.followUpDate.toDate(), "MMM d, yyyy") : "-";
       case 'owner': return lead.primaryOwner === user?.uid ? "Me" : "Other User";
       case 'country': return lead.country || "-";
-      default: return lead[colId] || ""; // Handle dynamic custom fields
+      default: return lead[colId] || ""; 
     }
   };
 
@@ -179,17 +202,112 @@ export default function LeadsPage() {
     return <span className="text-slate-600">{val}</span>;
   };
 
+  // EXCEL MODE LOGIC
+  const handleExcelUpdate = async (leadId: string, colId: string, value: any) => {
+    try {
+      let finalValue = value;
+      if (colId === 'followup' && value) {
+        finalValue = Timestamp.fromDate(new Date(value));
+      } else {
+        const customFieldDef = settings?.customFields?.find((cf: any) => cf.id === colId);
+        if (customFieldDef?.type === 'date' && value) {
+          finalValue = Timestamp.fromDate(new Date(value));
+        } else if (customFieldDef?.type === 'number' && value) {
+          finalValue = Number(value);
+        }
+      }
+
+      await updateDoc(doc(db, "leads", leadId), { [colId]: finalValue });
+      setLeads(leads.map(l => l.id === leadId ? { ...l, [colId]: finalValue } : l));
+      toast.success("Updated successfully");
+    } catch (e) {
+      toast.error("Failed to update");
+    }
+  };
+
+  const handleAddExcelRow = async () => {
+    try {
+      const docRef = await addDoc(collection(db, "leads"), {
+        firstName: "",
+        lastName: "",
+        organization: "New Lead",
+        email: "",
+        investorType: settings?.investorTypes?.[0] || "",
+        leadStage: settings?.leadStages?.[0] || "",
+        lastInteraction: Timestamp.now(),
+        primaryOwner: user?.uid,
+        createdAt: Timestamp.now()
+      });
+      const newLead = { 
+        id: docRef.id, 
+        firstName: "",
+        lastName: "",
+        organization: "New Lead",
+        email: "",
+        investorType: settings?.investorTypes?.[0] || "",
+        leadStage: settings?.leadStages?.[0] || "",
+        lastInteraction: Timestamp.now(), 
+        primaryOwner: user?.uid, 
+        createdAt: Timestamp.now() 
+      };
+      setLeads([...leads, newLead]);
+      
+      // Auto focus the new row
+      setTimeout(() => {
+        const el = document.querySelector(`[data-coord="${filteredLeads.length}-0"]`) as HTMLElement;
+        if (el) el.focus();
+      }, 100);
+      
+    } catch (e) {
+      toast.error("Failed to add row");
+    }
+  };
+
+  const renderExcelModeCell = (lead: any, col: ColumnDef, rowIndex: number, colIndex: number) => {
+    let type: 'text' | 'number' | 'date' | 'select' = 'text';
+    let options: string[] = [];
+    let readOnly = false;
+
+    if (col.id === 'type') {
+      type = 'select';
+      options = settings?.investorTypes || [];
+    } else if (col.id === 'stage') {
+      type = 'select';
+      options = settings?.leadStages || [];
+    } else if (col.id === 'interaction' || col.id === 'owner') {
+      readOnly = true;
+    } else if (col.id === 'followup') {
+      type = 'date';
+    } else {
+      const customFieldDef = settings?.customFields?.find((cf: any) => cf.id === col.id);
+      if (customFieldDef) {
+        if (customFieldDef.type === 'number') type = 'number';
+        if (customFieldDef.type === 'date') type = 'date';
+      }
+    }
+    
+    // We pass the raw value to ExcelCell so it can handle Timestamp objects natively
+    let rawValue = lead[col.id] || "";
+    
+    return (
+      <ExcelCell
+        value={rawValue}
+        colId={col.id}
+        rowIndex={rowIndex}
+        colIndex={colIndex}
+        type={type}
+        options={options}
+        readOnly={readOnly}
+        onChange={(cId, newVal) => handleExcelUpdate(lead.id, cId, newVal)}
+      />
+    );
+  };
+
   const handleRowClick = (lead: any) => {
+    if (isExcelMode) return;
     setSelectedLead(lead);
     setIsSlideOverOpen(true);
   };
-
-  const filteredLeads = leads.filter(lead => {
-    const matchesSearch = !searchQuery || 
-      `${lead.firstName} ${lead.lastName} ${lead.organization} ${lead.email}`.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStage = stageFilter === 'All' || lead.leadStage === stageFilter;
-    return matchesSearch && matchesStage;
-  });
 
   return (
     <div className="p-8 max-w-7xl mx-auto flex flex-col h-full">
@@ -258,6 +376,15 @@ export default function LeadsPage() {
           </div>
 
           <button 
+            onClick={() => setIsExcelMode(!isExcelMode)}
+            className={`flex items-center gap-2 px-4 py-1.5 text-sm font-medium rounded-md border transition-colors ${
+              isExcelMode ? 'bg-blue-50 text-blue-700 border-blue-200 shadow-sm' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
+            }`}
+          >
+            <Table className="w-4 h-4" /> Excel Mode
+          </button>
+
+          <button 
             onClick={() => setIsModalOpen(true)}
             className="flex items-center gap-2 px-4 py-1.5 text-sm font-medium text-white bg-slate-900 rounded-md hover:bg-slate-800"
           >
@@ -314,10 +441,10 @@ export default function LeadsPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-white border border-slate-200 rounded-xl shadow-sm flex-1 overflow-hidden flex flex-col">
-        <div className="overflow-x-auto">
+      <div className={`bg-white border border-slate-200 rounded-xl shadow-sm flex-1 overflow-hidden flex flex-col ${isExcelMode ? 'ring-2 ring-blue-500/20' : ''}`}>
+        <div className="overflow-x-auto flex-1">
           <table className="w-full text-left text-sm whitespace-nowrap">
-            <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs font-semibold">
+            <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs font-semibold sticky top-0 z-10">
               <tr>
                 <th className="px-6 py-4 w-10">
                   <input type="checkbox" className="rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
@@ -339,14 +466,18 @@ export default function LeadsPage() {
                   </td>
                 </tr>
               ) : (
-                filteredLeads.map((lead) => (
-                  <tr key={lead.id} onClick={() => handleRowClick(lead)} className="hover:bg-slate-50 transition-colors cursor-pointer">
-                    <td className="px-6 py-4" onClick={e => e.stopPropagation()}>
+                filteredLeads.map((lead, rowIndex) => (
+                  <tr 
+                    key={lead.id} 
+                    onClick={() => handleRowClick(lead)} 
+                    className={`${isExcelMode ? 'bg-white' : 'hover:bg-slate-50 transition-colors cursor-pointer'}`}
+                  >
+                    <td className="px-6 py-2" onClick={e => e.stopPropagation()}>
                       <input type="checkbox" className="rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
                     </td>
-                    {columns.filter(c => c.visible).map(c => (
-                      <td key={c.id} className="px-6 py-4">
-                        {renderCell(lead, c.id)}
+                    {columns.filter(c => c.visible).map((c, colIndex) => (
+                      <td key={c.id} className={`px-0 py-0 ${isExcelMode ? 'border-r border-slate-100 last:border-r-0' : 'px-6 py-4'}`}>
+                        {isExcelMode ? renderExcelModeCell(lead, c, rowIndex, colIndex) : renderCell(lead, c.id)}
                       </td>
                     ))}
                   </tr>
@@ -355,6 +486,16 @@ export default function LeadsPage() {
             </tbody>
           </table>
         </div>
+        {isExcelMode && (
+          <div className="p-2 border-t border-slate-200 bg-slate-50">
+            <button 
+              onClick={handleAddExcelRow}
+              className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-200 rounded transition-colors"
+            >
+              <Plus className="w-3.5 h-3.5" /> Add Row
+            </button>
+          </div>
+        )}
       </div>
 
       <AddLeadModal 
