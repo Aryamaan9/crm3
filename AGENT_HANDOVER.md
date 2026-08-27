@@ -37,10 +37,12 @@ Welcome to the **Modern CRM (mscrm3-a777e)** codebase. This document contains ev
 4. **Windows Execution:** The host environment is Windows PowerShell. Always prefix node executable commands with `cmd.exe /c "..."` (e.g., `cmd.exe /c "npx playwright test"`).
 
 ## Current Core Modules
-- **Settings (`/settings`)**: Tabbed interface. Dynamically manages the `customFields` engine which propagates throughout the app.
-- **Leads (`/leads`)**: Tabular view. Uses `LeadSlideOver.tsx` for viewing/editing.
-- **Pipeline (`/pipeline`)**: Drag-and-drop Kanban board mapping to `leadStage`.
-- **Email (`/email`)**: SPA for composing targeted investor updates with live HTML preview and dynamic tag insertion (`{{first_name}}`).
+- **Settings (`/settings`)**: Tabbed interface. Manages Global `leadStages`, `investorTypes`, `customFields`, and User roles (`admin`, `senior`, `junior`).
+- **Leads (`/leads`)**: Tabular view with dual modes.
+  - **Standard Mode**: Checkboxes and `LeadSlideOver.tsx` for deep editing.
+  - **Excel Mode**: Arrow-key navigation, inline editing, robust multi-cell paste from Excel (auto-creates new rows for overflow), and inline row deletion via trash icons.
+- **Pipeline (`/pipeline`)**: Drag-and-drop Kanban board mapped dynamically to `leadStage`.
+- **Email (`/email`)**: SPA for composing targeted investor updates with live HTML preview and dynamic tag insertion (`{{first_name}}`). Includes a live **Campaign History & Queue** table reflecting the `email_queue` collection metrics.
 - **Dashboard (`/dashboard`)**: Analytics powered by `recharts`.
 
 ## Development Commands
