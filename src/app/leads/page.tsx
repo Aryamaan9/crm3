@@ -30,6 +30,7 @@ export default function LeadsPage() {
   // Search & Filter state
   const [searchQuery, setSearchQuery] = useState("");
   const [stageFilter, setStageFilter] = useState("All");
+  const [typeFilter, setTypeFilter] = useState("All");
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   
   // Settings state
@@ -108,10 +109,11 @@ export default function LeadsPage() {
       const matchesSearch = !searchQuery || 
         `${lead.firstName} ${lead.lastName} ${lead.organization} ${lead.email}`.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesStage = stageFilter === 'All' || lead.leadStage === stageFilter;
-      return matchesSearch && matchesStage;
+      const matchesType = typeFilter === 'All' || lead.investorType === typeFilter;
+      return matchesSearch && matchesStage && matchesType;
     });
     setFilteredLeads(res);
-  }, [leads, searchQuery, stageFilter]);
+  }, [leads, searchQuery, stageFilter, typeFilter]);
 
   const handleExport = () => {
     const visibleCols = columns.filter(c => c.visible);
@@ -516,31 +518,56 @@ export default function LeadsPage() {
         <div className="relative" ref={filterMenuRef}>
           <button 
             onClick={() => setShowFilterMenu(!showFilterMenu)}
-            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-md hover:bg-slate-50"
+            className={`flex items-center gap-2 px-3 py-2 text-sm font-medium border rounded-md transition-colors ${
+              stageFilter !== 'All' || typeFilter !== 'All' 
+                ? 'bg-blue-50 border-blue-200 text-blue-700' 
+                : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+            }`}
           >
-            <Filter className="w-4 h-4" /> {stageFilter === 'All' ? 'Filter' : stageFilter}
+            <Filter className="w-4 h-4" /> 
+            {stageFilter !== 'All' || typeFilter !== 'All' ? 'Filters Active' : 'Filter'}
           </button>
           
           {showFilterMenu && (
-            <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-slate-200 rounded-lg shadow-xl z-20 py-2">
-              <div className="px-4 py-2">
-                <h4 className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Filter by Stage</h4>
-                <div className="space-y-1">
+            <div className="absolute right-0 top-full mt-2 w-64 bg-white border border-slate-200 rounded-lg shadow-xl z-20 overflow-hidden">
+              <div className="p-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+                <h3 className="font-semibold text-slate-800 text-sm">Advanced Filters</h3>
+                {(stageFilter !== 'All' || typeFilter !== 'All') && (
                   <button 
-                    onClick={() => { setStageFilter('All'); setShowFilterMenu(false); }}
-                    className={`w-full text-left px-2 py-1.5 text-sm rounded-md hover:bg-slate-50 ${stageFilter === 'All' ? 'font-bold text-blue-600' : 'text-slate-600'}`}
+                    onClick={() => { setStageFilter('All'); setTypeFilter('All'); }}
+                    className="text-xs font-medium text-blue-600 hover:text-blue-800"
                   >
-                    All Stages
+                    Clear All
                   </button>
-                  {settings?.leadStages?.map((stage: string) => (
-                    <button 
-                      key={stage}
-                      onClick={() => { setStageFilter(stage); setShowFilterMenu(false); }}
-                      className={`w-full text-left px-2 py-1.5 text-sm rounded-md hover:bg-slate-50 ${stageFilter === stage ? 'font-bold text-blue-600' : 'text-slate-600'}`}
-                    >
-                      {stage}
-                    </button>
-                  ))}
+                )}
+              </div>
+              <div className="p-4 space-y-4">
+                <div>
+                  <label className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5 block">Pipeline Stage</label>
+                  <select 
+                    value={stageFilter}
+                    onChange={(e) => setStageFilter(e.target.value)}
+                    className="w-full text-sm border border-slate-200 rounded-md p-2 bg-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+                  >
+                    <option value="All">All Stages</option>
+                    {settings?.leadStages?.map((stage: string) => (
+                      <option key={stage} value={stage}>{stage}</option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5 block">Investor Type</label>
+                  <select 
+                    value={typeFilter}
+                    onChange={(e) => setTypeFilter(e.target.value)}
+                    className="w-full text-sm border border-slate-200 rounded-md p-2 bg-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+                  >
+                    <option value="All">All Types</option>
+                    {settings?.investorTypes?.map((t: string) => (
+                      <option key={t} value={t}>{t}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
             </div>
