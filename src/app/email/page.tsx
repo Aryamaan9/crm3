@@ -49,7 +49,7 @@ export default function EmailModule() {
           setSettings(globalSettings);
         }
       } catch (err) {
-        console.error("Failed to fetch data for email module", err);
+        toast.error("Failed to fetch data for email module");
       }
     }
     fetchData();

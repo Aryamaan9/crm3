@@ -7,6 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 import { isBefore, isSameDay, startOfDay } from "date-fns";
 import { Users, TrendingUp, Calendar, AlertCircle } from "lucide-react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
+import toast from "react-hot-toast";
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#64748b', '#14b8a6'];
 
@@ -75,7 +76,7 @@ export default function DashboardPage() {
         setInvestorData(Object.entries(iData).map(([name, count]) => ({ name, value: count })));
 
       } catch (err) {
-        console.error(err);
+        toast.error("Failed to load dashboard data");
       } finally {
         setLoading(false);
       }

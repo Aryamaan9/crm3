@@ -5,6 +5,7 @@ import { collection, query, getDocs, addDoc, Timestamp } from "firebase/firestor
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { Plus, UsersRound } from "lucide-react";
+import toast from "react-hot-toast";
 
 export default function DistributorsPage() {
   const { user } = useAuth();
@@ -25,7 +26,7 @@ export default function DistributorsPage() {
       const snapshot = await getDocs(q);
       setDistributors(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     } catch (err) {
-      console.error(err);
+      toast.error("Failed to load distributors");
     } finally {
       setLoading(false);
     }
@@ -48,9 +49,10 @@ export default function DistributorsPage() {
       });
       setShowAdd(false);
       setName(""); setContact(""); setEmail(""); setNotes("");
+      toast.success("Distributor added successfully");
       fetchDistributors();
     } catch (err) {
-      console.error(err);
+      toast.error("Failed to add distributor");
     }
   };
 

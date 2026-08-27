@@ -23,6 +23,11 @@ export default function LeadsPage() {
   const [selectedLead, setSelectedLead] = useState<any>(null);
   const [isSlideOverOpen, setIsSlideOverOpen] = useState(false);
   
+  // Search & Filter state
+  const [searchQuery, setSearchQuery] = useState("");
+  const [stageFilter, setStageFilter] = useState("All");
+  const [showFilterMenu, setShowFilterMenu] = useState(false);
+  
   // Settings state
   const [settings, setSettings] = useState<any>(null);
 
@@ -72,7 +77,7 @@ export default function LeadsPage() {
       const leadsData: any[] = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setLeads(leadsData);
     } catch (err: any) {
-      console.error("Failed to load data.", err);
+      toast.error("Failed to load data.");
     } finally {
       setLoading(false);
     }
@@ -179,13 +184,20 @@ export default function LeadsPage() {
     setIsSlideOverOpen(true);
   };
 
+  const filteredLeads = leads.filter(lead => {
+    const matchesSearch = !searchQuery || 
+      `${lead.firstName} ${lead.lastName} ${lead.organization} ${lead.email}`.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStage = stageFilter === 'All' || lead.leadStage === stageFilter;
+    return matchesSearch && matchesStage;
+  });
+
   return (
     <div className="p-8 max-w-7xl mx-auto flex flex-col h-full">
       {/* Header Actions */}
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Leads</h1>
-          <p className="text-sm text-slate-500 mt-1">{leads.length} of {leads.length} leads</p>
+          <p className="text-sm text-slate-500 mt-1">{filteredLeads.length} of {leads.length} leads</p>
         </div>
         <div className="flex items-center gap-3 relative">
           
@@ -260,13 +272,45 @@ export default function LeadsPage() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
           <input 
             type="text" 
-            placeholder="Search name, organization, email, notes..." 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search name, organization, email..." 
             className="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-md text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
           />
         </div>
-        <button className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-md hover:bg-slate-50">
-          <Filter className="w-4 h-4" /> Filter
-        </button>
+        <div className="relative">
+          <button 
+            onClick={() => setShowFilterMenu(!showFilterMenu)}
+            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-md hover:bg-slate-50"
+          >
+            <Filter className="w-4 h-4" /> {stageFilter === 'All' ? 'Filter' : stageFilter}
+          </button>
+          
+          {showFilterMenu && (
+            <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-slate-200 rounded-lg shadow-xl z-20 py-2">
+              <div className="px-4 py-2">
+                <h4 className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Filter by Stage</h4>
+                <div className="space-y-1">
+                  <button 
+                    onClick={() => { setStageFilter('All'); setShowFilterMenu(false); }}
+                    className={`w-full text-left px-2 py-1.5 text-sm rounded-md hover:bg-slate-50 ${stageFilter === 'All' ? 'font-bold text-blue-600' : 'text-slate-600'}`}
+                  >
+                    All Stages
+                  </button>
+                  {settings?.leadStages?.map((stage: string) => (
+                    <button 
+                      key={stage}
+                      onClick={() => { setStageFilter(stage); setShowFilterMenu(false); }}
+                      className={`w-full text-left px-2 py-1.5 text-sm rounded-md hover:bg-slate-50 ${stageFilter === stage ? 'font-bold text-blue-600' : 'text-slate-600'}`}
+                    >
+                      {stage}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Table */}
@@ -288,14 +332,14 @@ export default function LeadsPage() {
                 <tr>
                   <td colSpan={columns.filter(c => c.visible).length + 1} className="px-6 py-8 text-center text-slate-500">Loading leads...</td>
                 </tr>
-              ) : leads.length === 0 ? (
+              ) : filteredLeads.length === 0 ? (
                 <tr>
                   <td colSpan={columns.filter(c => c.visible).length + 1} className="px-6 py-12 text-center text-slate-500">
-                    No leads yet. Import a CSV or click "New Lead".
+                    No leads found matching criteria.
                   </td>
                 </tr>
               ) : (
-                leads.map((lead) => (
+                filteredLeads.map((lead) => (
                   <tr key={lead.id} onClick={() => handleRowClick(lead)} className="hover:bg-slate-50 transition-colors cursor-pointer">
                     <td className="px-6 py-4" onClick={e => e.stopPropagation()}>
                       <input type="checkbox" className="rounded border-slate-300 text-blue-600 focus:ring-blue-500" />

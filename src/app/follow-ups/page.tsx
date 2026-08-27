@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection, query, where, getDocs, doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { format, isBefore, isSameDay, startOfDay } from "date-fns";
 import { Calendar } from "lucide-react";
+import toast from "react-hot-toast";
+import { LeadSlideOver } from "@/components/leads/LeadSlideOver";
 
 export default function FollowUpsPage() {
   const { user, profile } = useAuth();
@@ -15,52 +17,67 @@ export default function FollowUpsPage() {
   const [today, setToday] = useState<any[]>([]);
   const [upcoming, setUpcoming] = useState<any[]>([]);
 
-  useEffect(() => {
-    async function fetchFollowUps() {
-      if (!user || !profile) return;
-      try {
-        let q: any = collection(db, "leads");
-        if (profile.role === "junior") {
-          q = query(q, where("primaryOwner", "==", user.uid));
-        }
-        
-        const snapshot = await getDocs(q);
-        const leads: any[] = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-          .filter(lead => lead.followUpDate); // Must have a date
+  // Slide-over & Settings State
+  const [selectedLead, setSelectedLead] = useState<any>(null);
+  const [isSlideOverOpen, setIsSlideOverOpen] = useState(false);
+  const [settings, setSettings] = useState<any>(null);
 
-        const now = startOfDay(new Date());
-        
-        const _overdue: any[] = [];
-        const _today: any[] = [];
-        const _upcoming: any[] = [];
+  const fetchFollowUps = async () => {
+    if (!user || !profile) return;
+    try {
+      // Fetch settings for slide-over
+      const snap = await getDoc(doc(db, "settings", "global"));
+      setSettings(snap.exists() ? snap.data() : null);
 
-        leads.forEach(lead => {
-          const date = lead.followUpDate.toDate();
-          const targetDay = startOfDay(date);
-          
-          if (isSameDay(targetDay, now)) {
-            _today.push(lead);
-          } else if (isBefore(targetDay, now)) {
-            _overdue.push(lead);
-          } else {
-            _upcoming.push(lead);
-          }
-        });
-
-        setOverdue(_overdue.sort((a, b) => a.followUpDate.toMillis() - b.followUpDate.toMillis()));
-        setToday(_today);
-        setUpcoming(_upcoming.sort((a, b) => a.followUpDate.toMillis() - b.followUpDate.toMillis()));
-
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
+      let q: any = collection(db, "leads");
+      if (profile.role === "junior") {
+        q = query(q, where("primaryOwner", "==", user.uid));
       }
+      
+      const snapshot = await getDocs(q);
+      const leads: any[] = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+        .filter(lead => lead.followUpDate); // Must have a date
+
+      const now = startOfDay(new Date());
+      
+      const _overdue: any[] = [];
+      const _today: any[] = [];
+      const _upcoming: any[] = [];
+
+      leads.forEach(lead => {
+        const date = lead.followUpDate.toDate();
+        const targetDay = startOfDay(date);
+        
+        if (isSameDay(targetDay, now)) {
+          _today.push(lead);
+        } else if (isBefore(targetDay, now)) {
+          _overdue.push(lead);
+        } else {
+          _upcoming.push(lead);
+        }
+      });
+
+      setOverdue(_overdue.sort((a, b) => a.followUpDate.toMillis() - b.followUpDate.toMillis()));
+      setToday(_today);
+      setUpcoming(_upcoming.sort((a, b) => a.followUpDate.toMillis() - b.followUpDate.toMillis()));
+
+    } catch (err) {
+      toast.error("Failed to load follow-ups");
+    } finally {
+      setLoading(false);
     }
+  };
+
+  useEffect(() => {
     fetchFollowUps();
   }, [user, profile]);
 
   if (loading) return <div className="p-8 animate-pulse text-slate-500">Loading follow-ups...</div>;
+
+  const handleViewLead = (lead: any) => {
+    setSelectedLead(lead);
+    setIsSlideOverOpen(true);
+  };
 
   const renderSection = (title: string, count: number, items: any[], colorClass: string) => (
     <div className={`bg-white rounded-xl border ${colorClass} shadow-sm overflow-hidden`}>
@@ -80,11 +97,15 @@ export default function FollowUpsPage() {
                   <p className="text-xs text-slate-500 mt-1">{lead.organization}</p>
                 </div>
                 <div className="text-right">
-                  <div className="inline-flex items-center text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded">
+                  <div className="inline-flex items-center text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded mb-1">
                     <Calendar className="w-3 h-3 mr-1.5" />
                     {format(lead.followUpDate.toDate(), "MMM d, yyyy")}
                   </div>
-                  <p className="text-xs text-blue-600 mt-1 cursor-pointer hover:underline">View Lead</p>
+                  <div>
+                    <button onClick={() => handleViewLead(lead)} className="text-xs text-blue-600 font-medium hover:underline">
+                      View Lead
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
@@ -106,6 +127,14 @@ export default function FollowUpsPage() {
         {renderSection("Today", today.length, today, "border-slate-200")}
         {renderSection("Upcoming", upcoming.length, upcoming, "border-slate-200")}
       </div>
+
+      <LeadSlideOver
+        isOpen={isSlideOverOpen}
+        onClose={() => setIsSlideOverOpen(false)}
+        lead={selectedLead}
+        onSuccess={fetchFollowUps}
+        settings={settings}
+      />
     </div>
   );
 }
