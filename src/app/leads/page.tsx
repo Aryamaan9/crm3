@@ -206,11 +206,11 @@ export default function LeadsPage() {
           </button>
           
           <input type="file" accept=".csv" ref={fileInputRef} onChange={handleImport} className="hidden" />
-          <button onClick={() => fileInputRef.current?.click()} className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-md hover:bg-slate-50">
+          <button onClick={() => fileInputRef.current?.click()} className="flex items-center gap-2 px-4 py-1.5 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-md hover:bg-slate-50">
             <Upload className="w-4 h-4" /> Import
           </button>
           
-          <div className="relative">
+          <div className="relative" ref={colsMenuRef}>
             <button 
               onClick={() => setShowColsMenu(!showColsMenu)}
               className="flex items-center gap-2 px-4 py-1.5 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-md hover:bg-slate-50"
@@ -278,7 +278,7 @@ export default function LeadsPage() {
             className="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-md text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
           />
         </div>
-        <div className="relative">
+        <div className="relative" ref={filterMenuRef}>
           <button 
             onClick={() => setShowFilterMenu(!showFilterMenu)}
             className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-md hover:bg-slate-50"

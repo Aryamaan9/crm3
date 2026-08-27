@@ -78,8 +78,8 @@ export function LeadSlideOver({ isOpen, onClose, lead, onSuccess, settings }: Le
   const availableTypes = settings?.investorTypes || [];
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end bg-black/20 backdrop-blur-sm">
-      <div className="w-full max-w-md bg-white h-full shadow-2xl border-l border-slate-200 flex flex-col animate-in slide-in-from-right duration-300">
+    <div className="fixed inset-0 z-50 flex justify-end bg-black/20 backdrop-blur-sm" onMouseDown={onClose}>
+      <div className="w-full max-w-md bg-white h-full shadow-2xl border-l border-slate-200 flex flex-col animate-in slide-in-from-right duration-300" onMouseDown={e => e.stopPropagation()}>
         
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-100 bg-slate-50">
