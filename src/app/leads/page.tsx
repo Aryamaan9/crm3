@@ -33,6 +33,10 @@ export default function LeadsPage() {
   const [typeFilter, setTypeFilter] = useState("All");
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   
+  // Header filter & sort state
+  const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
+  const [columnFilters, setColumnFilters] = useState<Record<string, string>>({});
+  
   // Settings state
   const [settings, setSettings] = useState<any>(null);
 
@@ -105,15 +109,38 @@ export default function LeadsPage() {
   }, []);
 
   useEffect(() => {
-    const res = leads.filter(lead => {
+    let res = leads.filter(lead => {
       const matchesSearch = !searchQuery || 
         `${lead.firstName} ${lead.lastName} ${lead.organization} ${lead.email}`.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesStage = stageFilter === 'All' || lead.leadStage === stageFilter;
       const matchesType = typeFilter === 'All' || lead.investorType === typeFilter;
-      return matchesSearch && matchesStage && matchesType;
+      
+      let matchesColumns = true;
+      for (const [colId, filterVal] of Object.entries(columnFilters)) {
+        if (filterVal) {
+          const cellVal = String(getCellValue(lead, colId) || '').toLowerCase();
+          if (!cellVal.includes(filterVal.toLowerCase())) {
+            matchesColumns = false;
+            break;
+          }
+        }
+      }
+      
+      return matchesSearch && matchesStage && matchesType && matchesColumns;
     });
+
+    if (sortConfig) {
+      res.sort((a, b) => {
+        const valA = getCellValue(a, sortConfig.key) || '';
+        const valB = getCellValue(b, sortConfig.key) || '';
+        if (valA < valB) return sortConfig.direction === 'asc' ? -1 : 1;
+        if (valA > valB) return sortConfig.direction === 'asc' ? 1 : -1;
+        return 0;
+      });
+    }
+
     setFilteredLeads(res);
-  }, [leads, searchQuery, stageFilter, typeFilter]);
+  }, [leads, searchQuery, stageFilter, typeFilter, sortConfig, columnFilters]);
 
   const handleExport = () => {
     const visibleCols = columns.filter(c => c.visible);
@@ -593,7 +620,35 @@ export default function LeadsPage() {
                     <input type="checkbox" className="rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
                   </th>
                   {columns.filter(c => c.visible).map(c => (
-                    <th key={c.id} className="px-6 py-4">{c.label}</th>
+                    <th key={c.id} className="px-6 py-4 align-top group">
+                      <div className="flex flex-col gap-2">
+                        <div 
+                          className="flex items-center gap-1 cursor-pointer hover:text-slate-800 transition-colors"
+                          onClick={() => {
+                            let direction: 'asc' | 'desc' = 'asc';
+                            if (sortConfig?.key === c.id && sortConfig.direction === 'asc') {
+                              direction = 'desc';
+                            }
+                            setSortConfig({ key: c.id, direction });
+                          }}
+                        >
+                          {c.label}
+                          {sortConfig?.key === c.id ? (
+                            sortConfig.direction === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />
+                          ) : (
+                            <ArrowUp className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                          )}
+                        </div>
+                        <input
+                          type="text"
+                          placeholder="Filter..."
+                          className="w-full px-2 py-1 text-xs border border-slate-200 rounded font-normal focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white"
+                          value={columnFilters[c.id] || ''}
+                          onChange={(e) => setColumnFilters(prev => ({ ...prev, [c.id]: e.target.value }))}
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      </div>
+                    </th>
                   ))}
                 </tr>
               </thead>

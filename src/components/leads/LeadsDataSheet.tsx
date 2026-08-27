@@ -153,7 +153,7 @@ export function LeadsDataSheet({ leads, setLeads, columns, settings }: any) {
   };
 
   return (
-    <div className="flex-1 overflow-hidden" style={{ height: '500px' }}>
+    <div className="flex-1 overflow-hidden" style={{ height: '500px' }} onContextMenu={(e) => e.preventDefault()}>
        <DataSheetGrid
          value={gridData}
          onChange={handleChange}
