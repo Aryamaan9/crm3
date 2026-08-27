@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { collection, getDocs, addDoc, Timestamp } from "firebase/firestore";
+import { collection, getDocs, addDoc, Timestamp, query, orderBy } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
-import { Mail, Send, CheckCircle2, Eye, MousePointerClick, AlertCircle, Settings2, Plus, X, Search, Filter } from "lucide-react";
+import { Mail, Send, CheckCircle2, Eye, MousePointerClick, AlertCircle, Settings2, Plus, X, Search, Filter, Clock } from "lucide-react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { format } from "date-fns";
 
 type ViewState = 'dashboard' | 'compose';
 
@@ -17,6 +18,7 @@ export default function EmailModule() {
   
   // Data State
   const [leads, setLeads] = useState<any[]>([]);
+  const [campaigns, setCampaigns] = useState<any[]>([]);
   const [settings, setSettings] = useState<any>({ leadStages: [], investorTypes: [] });
   
   // Compose State
@@ -34,6 +36,16 @@ export default function EmailModule() {
 
   const bodyRef = useRef<HTMLTextAreaElement>(null);
 
+  const fetchCampaigns = async () => {
+    try {
+      const q = query(collection(db, "email_queue"), orderBy("createdAt", "desc"));
+      const snap = await getDocs(q);
+      setCampaigns(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+    } catch (e) {
+      console.error("Failed to fetch campaigns", e);
+    }
+  };
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -48,6 +60,8 @@ export default function EmailModule() {
         if (globalSettings) {
           setSettings(globalSettings);
         }
+        
+        await fetchCampaigns();
       } catch (err) {
         toast.error("Failed to fetch data for email module");
       }
@@ -120,6 +134,7 @@ export default function EmailModule() {
       setCampaignName("");
       setSubject("");
       setSelectedLeads(new Set());
+      await fetchCampaigns();
     } catch (err) {
       toast.error("Failed to queue campaign");
     }
@@ -134,6 +149,11 @@ export default function EmailModule() {
     { tag: "{{lead_stage}}", label: "Lead Stage" },
     { tag: "{{current_country}}", label: "Country" },
   ];
+
+  const totalCampaigns = campaigns.length;
+  const queuedCampaigns = campaigns.filter(c => c.status === 'queued').length;
+  const sentCampaigns = campaigns.filter(c => c.status === 'sent').length;
+  const sentRecipients = campaigns.filter(c => c.status === 'sent').reduce((acc, c) => acc + (c.recipientIds?.length || 0), 0);
 
   return (
     <div className="p-8 max-w-6xl mx-auto">
@@ -180,12 +200,56 @@ export default function EmailModule() {
 
           {/* KPI Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <MetricCard icon={<Mail className="w-5 h-5 text-slate-600"/>} title="Total Campaigns" value="0" sub="Broadcast updates" />
-            <MetricCard icon={<Send className="w-5 h-5 text-blue-500"/>} title="Total Sent" value="0" sub="Sent · 0 queued" valueColor="text-blue-600" />
-            <MetricCard icon={<CheckCircle2 className="w-5 h-5 text-emerald-500"/>} title="Delivered" value="0" sub="100% delivery rate" valueColor="text-emerald-600" />
+            <MetricCard icon={<Mail className="w-5 h-5 text-slate-600"/>} title="Total Campaigns" value={totalCampaigns.toString()} sub="Broadcast updates" />
+            <MetricCard icon={<Send className="w-5 h-5 text-blue-500"/>} title="Total Sent" value={sentRecipients.toString()} sub={`${sentCampaigns} sent · ${queuedCampaigns} queued`} valueColor="text-blue-600" />
+            <MetricCard icon={<CheckCircle2 className="w-5 h-5 text-emerald-500"/>} title="Delivered" value={sentRecipients.toString()} sub="100% delivery rate (simulated)" valueColor="text-emerald-600" />
             <MetricCard icon={<Eye className="w-5 h-5 text-indigo-500"/>} title="Open Rate" value="0%" sub="0 opened" valueColor="text-indigo-600" />
             <MetricCard icon={<MousePointerClick className="w-5 h-5 text-purple-500"/>} title="Click Rate" value="0%" sub="0 clicked links" valueColor="text-purple-600" />
             <MetricCard icon={<AlertCircle className="w-5 h-5 text-amber-500"/>} title="Bounces / Failed" value="0" sub="Deliverability issues" valueColor="text-amber-600" />
+          </div>
+
+          {/* Campaign Queue Table */}
+          <div className="mt-8 bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+            <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-2 bg-slate-50">
+              <Clock className="w-4 h-4 text-slate-500" />
+              <h3 className="font-semibold text-slate-900">Campaign History & Queue</h3>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm whitespace-nowrap">
+                <thead className="bg-white border-b border-slate-100 text-slate-500 text-xs font-semibold uppercase tracking-wider">
+                  <tr>
+                    <th className="px-6 py-4">Campaign Name</th>
+                    <th className="px-6 py-4">Subject</th>
+                    <th className="px-6 py-4">Status</th>
+                    <th className="px-6 py-4">Recipients</th>
+                    <th className="px-6 py-4">Date Queued</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {campaigns.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="px-6 py-8 text-center text-slate-500">No campaigns found.</td>
+                    </tr>
+                  ) : (
+                    campaigns.map(c => (
+                      <tr key={c.id} className="hover:bg-slate-50 transition-colors">
+                        <td className="px-6 py-4 font-medium text-slate-900">{c.campaignName}</td>
+                        <td className="px-6 py-4 text-slate-600 max-w-xs truncate">{c.subject}</td>
+                        <td className="px-6 py-4">
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium uppercase tracking-wider ${c.status === 'queued' ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'}`}>
+                            {c.status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-slate-600">{c.recipientIds?.length || 0} users</td>
+                        <td className="px-6 py-4 text-slate-500">
+                          {c.createdAt ? format(c.createdAt.toDate(), "MMM d, yyyy h:mm a") : "-"}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       ) : (
