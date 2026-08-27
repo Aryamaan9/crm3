@@ -1,0 +1,817 @@
+[debug] [2026-08-27T19:36:48.074Z] ----------------------------------------------------------------------
+[debug] [2026-08-27T19:36:48.076Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\AA\AppData\Local\npm-cache\_npx\7750544ccf494d8b\node_modules\firebase-tools\lib\bin\firebase.js deploy --only hosting
+[debug] [2026-08-27T19:36:48.076Z] CLI Version:   15.28.2
+[debug] [2026-08-27T19:36:48.077Z] Platform:      win32
+[debug] [2026-08-27T19:36:48.077Z] Node Version:  v24.19.0
+[debug] [2026-08-27T19:36:48.077Z] Detected Agent: antigravity
+[debug] [2026-08-27T19:36:48.077Z] Time:          Fri Aug 28 2026 01:06:48 GMT+0530 (India Standard Time)
+[debug] [2026-08-27T19:36:48.077Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-08-27T19:36:50.694Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-08-27T19:36:50.694Z] > authorizing via signed-in user (aryamaanagarwal9@gmail.com)
+[debug] [2026-08-27T19:36:50.694Z] [iam] checking project mscrm3-a777e for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2026-08-27T19:36:50.708Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:36:50.708Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:36:50.709Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/mscrm3-a777e:testIamPermissions [none]
+[debug] [2026-08-27T19:36:50.710Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/mscrm3-a777e:testIamPermissions  x-goog-user-project=mscrm3-a777e
+[debug] [2026-08-27T19:36:50.710Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/mscrm3-a777e:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2026-08-27T19:36:52.017Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/mscrm3-a777e:testIamPermissions 200
+[debug] [2026-08-27T19:36:52.017Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/mscrm3-a777e:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2026-08-27T19:36:52.018Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:36:52.018Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:36:52.018Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/mscrm3-a777e [none]
+[debug] [2026-08-27T19:36:52.619Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/mscrm3-a777e 200
+[debug] [2026-08-27T19:36:52.619Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/mscrm3-a777e {"projectId":"mscrm3-a777e","projectNumber":"73264060901","displayName":"MSCRM3","name":"projects/mscrm3-a777e","resources":{"hostingSite":"mscrm3-a777e"},"state":"ACTIVE","labels":{"firebase":"enabled"},"etag":"1_c9a4a96e-a186-48e9-ae31-99c904a1ccf1"}
+[debug] [2026-08-27T19:36:56.361Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:36:56.361Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:36:56.362Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/mscrm3-a777e/sites pageToken=&pageSize=10
+[debug] [2026-08-27T19:36:57.577Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/mscrm3-a777e/sites 200
+[debug] [2026-08-27T19:36:57.577Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/mscrm3-a777e/sites {"sites":[{"name":"projects/mscrm3-a777e/sites/mscrm3-a777e","defaultUrl":"https://mscrm3-a777e.web.app","type":"DEFAULT_SITE"}]}
+[debug] [2026-08-27T19:36:57.578Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:36:57.578Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:36:57.578Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/mscrm3-a777e/sites 
+[debug] [2026-08-27T19:36:58.379Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/mscrm3-a777e/sites 200
+[debug] [2026-08-27T19:36:58.379Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/mscrm3-a777e/sites {"sites":[{"name":"projects/mscrm3-a777e/sites/mscrm3-a777e","defaultUrl":"https://mscrm3-a777e.web.app","type":"DEFAULT_SITE"}]}
+[debug] [2026-08-27T19:36:58.379Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:36:58.379Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:36:58.379Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/mscrm3-a777e/webApps/-/config [none]
+[debug] [2026-08-27T19:36:59.488Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/mscrm3-a777e/webApps/-/config 200
+[debug] [2026-08-27T19:36:59.488Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/mscrm3-a777e/webApps/-/config {"projectId":"mscrm3-a777e","appId":"1:73264060901:web:63c37f0a7436ac1c4ab70c","storageBucket":"mscrm3-a777e.firebasestorage.app","apiKey":"AIzaSyDsCldiDM2jUaTimZ3yBSzdqk51yEGtZEU","authDomain":"mscrm3-a777e.firebaseapp.com","messagingSenderId":"73264060901","projectNumber":"73264060901","version":"2"}
+[info] 
+   Thank you for trying our early preview of Next.js support on Firebase Hosting.
+   During the preview, support is best-effort and breaking changes can be expected. Proceed with caution.
+   The integration is known to work with Next.js version 12 - 16.0. You may encounter errors.
+
+   Documentation: https://firebase.google.com/docs/hosting/frameworks/nextjs
+   File a bug: https://github.com/firebase/firebase-tools/issues/new?template=bug_report.md
+   Submit a feature request: https://github.com/firebase/firebase-tools/issues/new?template=feature_request.md
+
+   We'd love to learn from you. Express your interest in helping us shape the future of Firebase Hosting: https://goo.gle/41enW5X
+
+[debug] [2026-08-27T19:37:08.465Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:37:08.465Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:37:08.465Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/mscrm3-a777e/sites/mscrm3-a777e [none]
+[debug] [2026-08-27T19:37:09.754Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/mscrm3-a777e/sites/mscrm3-a777e 200
+[debug] [2026-08-27T19:37:09.754Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/mscrm3-a777e/sites/mscrm3-a777e {"name":"projects/mscrm3-a777e/sites/mscrm3-a777e","defaultUrl":"https://mscrm3-a777e.web.app","type":"DEFAULT_SITE"}
+[info] ▲ Next.js 16.3.3 (Turbopack)
+
+[info] - Environments: .env.local
+
+[info] ✓ Running next.config.ts took 42ms
+
+[info] 
+
+[info]   Creating an optimized production build ...
+
+[info] ✓ Compiled successfully in 1756ms
+
+[info]   Skipping validation of types
+
+[info]   Finished TypeScript config validation in 21ms ...
+
+[info]   Collecting page data using 11 workers ...
+
+[info]   Generating static pages using 11 workers (0/12) ...
+
+[info]   Generating static pages using 11 workers (3/12) 
+
+[info]   Generating static pages using 11 workers (6/12) 
+
+[info]   Generating static pages using 11 workers (9/12) 
+
+[info] ✓ Generating static pages using 11 workers (12/12) in 839ms
+
+[info]   Finalizing page optimization ...
+
+[info] 
+
+[info] Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /dashboard
+├ ○ /distributors
+├ ○ /email
+├ ○ /follow-ups
+├ ○ /leads
+├ ○ /login
+├ ○ /pipeline
+└ ○ /settings
+
+
+
+[info] ○  (Static)  prerendered as static content
+
+
+[debug] [2026-08-27T19:37:19.608Z] Error: ENOENT: no such file or directory, open 'C:\Users\AA\Documents\antigravity\excited-bell\.next\server\middleware-manifest.json'
+[error] 
+[error] Error: An unexpected error has occurred.
+[debug] [2026-08-27T19:37:48.222Z] ----------------------------------------------------------------------
+[debug] [2026-08-27T19:37:48.225Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\AA\AppData\Local\npm-cache\_npx\7750544ccf494d8b\node_modules\firebase-tools\lib\bin\firebase.js deploy --only hosting --debug
+[debug] [2026-08-27T19:37:48.226Z] CLI Version:   15.28.2
+[debug] [2026-08-27T19:37:48.226Z] Platform:      win32
+[debug] [2026-08-27T19:37:48.226Z] Node Version:  v24.19.0
+[debug] [2026-08-27T19:37:48.226Z] Detected Agent: antigravity
+[debug] [2026-08-27T19:37:48.226Z] Time:          Fri Aug 28 2026 01:07:48 GMT+0530 (India Standard Time)
+[debug] [2026-08-27T19:37:48.227Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-08-27T19:37:50.736Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-08-27T19:37:50.736Z] > authorizing via signed-in user (aryamaanagarwal9@gmail.com)
+[debug] [2026-08-27T19:37:50.737Z] [iam] checking project mscrm3-a777e for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2026-08-27T19:37:50.752Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:37:50.752Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:37:50.754Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/mscrm3-a777e:testIamPermissions [none]
+[debug] [2026-08-27T19:37:50.754Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/mscrm3-a777e:testIamPermissions  x-goog-user-project=mscrm3-a777e
+[debug] [2026-08-27T19:37:50.754Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/mscrm3-a777e:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2026-08-27T19:37:52.055Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/mscrm3-a777e:testIamPermissions 200
+[debug] [2026-08-27T19:37:52.055Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/mscrm3-a777e:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2026-08-27T19:37:52.056Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:37:52.057Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:37:52.058Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/mscrm3-a777e [none]
+[debug] [2026-08-27T19:37:52.646Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/mscrm3-a777e 200
+[debug] [2026-08-27T19:37:52.646Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/mscrm3-a777e {"projectId":"mscrm3-a777e","projectNumber":"73264060901","displayName":"MSCRM3","name":"projects/mscrm3-a777e","resources":{"hostingSite":"mscrm3-a777e"},"state":"ACTIVE","labels":{"firebase":"enabled"},"etag":"1_c9a4a96e-a186-48e9-ae31-99c904a1ccf1"}
+[debug] [2026-08-27T19:37:56.225Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:37:56.225Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:37:56.226Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/mscrm3-a777e/sites pageToken=&pageSize=10
+[debug] [2026-08-27T19:37:57.486Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/mscrm3-a777e/sites 200
+[debug] [2026-08-27T19:37:57.487Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/mscrm3-a777e/sites {"sites":[{"name":"projects/mscrm3-a777e/sites/mscrm3-a777e","defaultUrl":"https://mscrm3-a777e.web.app","type":"DEFAULT_SITE"}]}
+[debug] [2026-08-27T19:37:57.487Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:37:57.488Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:37:57.488Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/mscrm3-a777e/sites 
+[debug] [2026-08-27T19:37:58.346Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/mscrm3-a777e/sites 200
+[debug] [2026-08-27T19:37:58.346Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/mscrm3-a777e/sites {"sites":[{"name":"projects/mscrm3-a777e/sites/mscrm3-a777e","defaultUrl":"https://mscrm3-a777e.web.app","type":"DEFAULT_SITE"}]}
+[debug] [2026-08-27T19:37:58.347Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:37:58.347Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:37:58.347Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/mscrm3-a777e/webApps/-/config [none]
+[debug] [2026-08-27T19:37:59.481Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/mscrm3-a777e/webApps/-/config 200
+[debug] [2026-08-27T19:37:59.481Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/mscrm3-a777e/webApps/-/config {"projectId":"mscrm3-a777e","appId":"1:73264060901:web:63c37f0a7436ac1c4ab70c","storageBucket":"mscrm3-a777e.firebasestorage.app","apiKey":"AIzaSyDsCldiDM2jUaTimZ3yBSzdqk51yEGtZEU","authDomain":"mscrm3-a777e.firebaseapp.com","messagingSenderId":"73264060901","projectNumber":"73264060901","version":"2"}
+[info] 
+   Thank you for trying our early preview of Next.js support on Firebase Hosting.
+   During the preview, support is best-effort and breaking changes can be expected. Proceed with caution.
+   The integration is known to work with Next.js version 12 - 16.0. You may encounter errors.
+
+   Documentation: https://firebase.google.com/docs/hosting/frameworks/nextjs
+   File a bug: https://github.com/firebase/firebase-tools/issues/new?template=bug_report.md
+   Submit a feature request: https://github.com/firebase/firebase-tools/issues/new?template=feature_request.md
+
+   We'd love to learn from you. Express your interest in helping us shape the future of Firebase Hosting: https://goo.gle/41enW5X
+
+[debug] [2026-08-27T19:38:07.949Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:38:07.949Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:38:07.949Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/mscrm3-a777e/sites/mscrm3-a777e [none]
+[debug] [2026-08-27T19:38:09.126Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/mscrm3-a777e/sites/mscrm3-a777e 200
+[debug] [2026-08-27T19:38:09.126Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/mscrm3-a777e/sites/mscrm3-a777e {"name":"projects/mscrm3-a777e/sites/mscrm3-a777e","defaultUrl":"https://mscrm3-a777e.web.app","type":"DEFAULT_SITE"}
+[info] ▲ Next.js 16.3.3 (Turbopack)
+
+[info] - Environments: .env.local
+
+[info] ✓ Running next.config.ts took 41ms
+
+[info] 
+
+[info]   Creating an optimized production build ...
+
+[info] 
+
+[info] [0.42ms] [@tailwindcss/postcss] node_modules\react-datasheet-grid\dist\style.css
+[0.40ms]   ↳ Quick bail check
+
+[info] 
+
+[info] 
+
+[info] [140.46ms] [@tailwindcss/postcss] src\app\globals.css
+[  0.12ms]   ↳ Quick bail check
+[ 35.68ms]   ↳ Setup compiler
+[  0.46ms]     ↳ PostCSS AST -> Tailwind CSS AST
+[ 35.18ms]     ↳ Create compiler
+[  0.24ms]   ↳ Register full rebuild paths
+[  2.89ms]   ↳ Setup scanner
+[ 22.40ms]   ↳ Scan for candidates
+[ 14.83ms]   ↳ Register dependency messages
+[ 44.23ms]   ↳ Build utilities
+[ 14.96ms]   ↳ Optimization
+[  0.89ms]     ↳ AST -> CSS
+[  7.96ms]     ↳ Lightning CSS
+[  6.05ms]     ↳ CSS -> PostCSS AST
+[  4.40ms]   ↳ Update PostCSS AST
+
+[info] 
+
+[info] ✓ Compiled successfully in 1652ms
+
+[info]   Skipping validation of types
+
+[info]   Finished TypeScript config validation in 12ms ...
+
+[info]   Collecting page data using 11 workers ...
+
+[info]   Generating static pages using 11 workers (0/12) ...
+
+[info]   Generating static pages using 11 workers (3/12) 
+
+[info]   Generating static pages using 11 workers (6/12) 
+
+[info]   Generating static pages using 11 workers (9/12) 
+
+[info] ✓ Generating static pages using 11 workers (12/12) in 844ms
+
+[info]   Finalizing page optimization ...
+
+[info] 
+
+[info] Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /dashboard
+├ ○ /distributors
+├ ○ /email
+├ ○ /follow-ups
+├ ○ /leads
+├ ○ /login
+├ ○ /pipeline
+└ ○ /settings
+
+
+[info] 
+○  (Static)  prerendered as static content
+
+
+[debug] [2026-08-27T19:38:20.324Z] [web frameworks] effective firebase.json:  {
+  "hosting": [
+    {
+      "source": ".",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "frameworksBackend": {
+        "region": "us-central1"
+      },
+      "site": "mscrm3-a777e",
+      "rewrites": [],
+      "redirects": [],
+      "headers": [
+        {
+          "source": "/_not-found",
+          "headers": [
+            {
+              "key": "x-nextjs-stale-time",
+              "value": "300"
+            },
+            {
+              "key": "x-nextjs-prerender",
+              "value": "1"
+            },
+            {
+              "key": "x-next-cache-tags",
+              "value": "_N_T_/layout,_N_T_/_not-found/layout,_N_T_/_not-found/page,_N_T_/_not-found"
+            }
+          ]
+        },
+        {
+          "source": "/distributors",
+          "headers": [
+            {
+              "key": "x-nextjs-stale-time",
+              "value": "300"
+            },
+            {
+              "key": "x-nextjs-prerender",
+              "value": "1"
+            },
+            {
+              "key": "x-next-cache-tags",
+              "value": "_N_T_/layout,_N_T_/distributors/layout,_N_T_/distributors/page,_N_T_/distributors"
+            }
+          ]
+        },
+        {
+          "source": "/leads",
+          "headers": [
+            {
+              "key": "x-nextjs-stale-time",
+              "value": "300"
+            },
+            {
+              "key": "x-nextjs-prerender",
+              "value": "1"
+            },
+            {
+              "key": "x-next-cache-tags",
+              "value": "_N_T_/layout,_N_T_/leads/layout,_N_T_/leads/page,_N_T_/leads"
+            }
+          ]
+        },
+        {
+          "source": "/dashboard",
+          "headers": [
+            {
+              "key": "x-nextjs-stale-time",
+              "value": "300"
+            },
+            {
+              "key": "x-nextjs-prerender",
+              "value": "1"
+            },
+            {
+              "key": "x-next-cache-tags",
+              "value": "_N_T_/layout,_N_T_/dashboard/layout,_N_T_/dashboard/page,_N_T_/dashboard"
+            }
+          ]
+        },
+        {
+          "source": "/_global-error",
+          "headers": [
+            {
+              "key": "x-nextjs-stale-time",
+              "value": "300"
+            },
+            {
+              "key": "x-nextjs-prerender",
+              "value": "1"
+            },
+            {
+              "key": "x-next-cache-tags",
+              "value": "_N_T_/layout,_N_T_/_global-error/layout,_N_T_/_global-error/page,_N_T_/_global-error"
+            }
+          ]
+        },
+        {
+          "source": "/settings",
+          "headers": [
+            {
+              "key": "x-nextjs-stale-time",
+              "value": "300"
+            },
+            {
+              "key": "x-nextjs-prerender",
+              "value": "1"
+            },
+            {
+              "key": "x-next-cache-tags",
+              "value": "_N_T_/layout,_N_T_/settings/layout,_N_T_/settings/page,_N_T_/settings"
+            }
+          ]
+        },
+        {
+          "source": "/email",
+          "headers": [
+            {
+              "key": "x-nextjs-stale-time",
+              "value": "300"
+            },
+            {
+              "key": "x-nextjs-prerender",
+              "value": "1"
+            },
+            {
+              "key": "x-next-cache-tags",
+              "value": "_N_T_/layout,_N_T_/email/layout,_N_T_/email/page,_N_T_/email"
+            }
+          ]
+        },
+        {
+          "source": "/follow-ups",
+          "headers": [
+            {
+              "key": "x-nextjs-stale-time",
+              "value": "300"
+            },
+            {
+              "key": "x-nextjs-prerender",
+              "value": "1"
+            },
+            {
+              "key": "x-next-cache-tags",
+              "value": "_N_T_/layout,_N_T_/follow-ups/layout,_N_T_/follow-ups/page,_N_T_/follow-ups"
+            }
+          ]
+        },
+        {
+          "source": "/pipeline",
+          "headers": [
+            {
+              "key": "x-nextjs-stale-time",
+              "value": "300"
+            },
+            {
+              "key": "x-nextjs-prerender",
+              "value": "1"
+            },
+            {
+              "key": "x-next-cache-tags",
+              "value": "_N_T_/layout,_N_T_/pipeline/layout,_N_T_/pipeline/page,_N_T_/pipeline"
+            }
+          ]
+        },
+        {
+          "source": "/login",
+          "headers": [
+            {
+              "key": "x-nextjs-stale-time",
+              "value": "300"
+            },
+            {
+              "key": "x-nextjs-prerender",
+              "value": "1"
+            },
+            {
+              "key": "x-next-cache-tags",
+              "value": "_N_T_/layout,_N_T_/login/layout,_N_T_/login/page,_N_T_/login"
+            }
+          ]
+        },
+        {
+          "source": "/favicon.ico",
+          "headers": [
+            {
+              "key": "cache-control",
+              "value": "public, max-age=0, must-revalidate"
+            },
+            {
+              "key": "content-type",
+              "value": "image/x-icon"
+            },
+            {
+              "key": "x-next-cache-tags",
+              "value": "_N_T_/layout,_N_T_/favicon.ico/layout,_N_T_/favicon.ico/route,_N_T_/favicon.ico"
+            }
+          ]
+        },
+        {
+          "source": "**/*.[jt]s",
+          "headers": [
+            {
+              "key": "Set-Cookie",
+              "value": "__FIREBASE_DEFAULTS__=eyJjb25maWciOnsicHJvamVjdElkIjoibXNjcm0zLWE3NzdlIiwiYXBwSWQiOiIxOjczMjY0MDYwOTAxOndlYjo2M2MzN2YwYTc0MzZhYzFjNGFiNzBjIiwic3RvcmFnZUJ1Y2tldCI6Im1zY3JtMy1hNzc3ZS5maXJlYmFzZXN0b3JhZ2UuYXBwIiwiYXBpS2V5IjoiQUl6YVN5RHNDbGRpRE0yalVhVGltWjN5QlN6ZHFrNTF5RUd0WkVVIiwiYXV0aERvbWFpbiI6Im1zY3JtMy1hNzc3ZS5maXJlYmFzZWFwcC5jb20iLCJtZXNzYWdpbmdTZW5kZXJJZCI6IjczMjY0MDYwOTAxIiwicHJvamVjdE51bWJlciI6IjczMjY0MDYwOTAxIiwidmVyc2lvbiI6IjIifX0; SameSite=Strict; Expires=2028-07-22T06:18:20.324Z; Path=/;"
+            }
+          ]
+        }
+      ],
+      "cleanUrls": true,
+      "trailingSlash": false,
+      "public": ".firebase\\mscrm3-a777e\\hosting",
+      "webFramework": "next"
+    }
+  ]
+}
+[info] 
+[info] === Deploying to 'mscrm3-a777e'...
+[info] 
+[info] i  deploying hosting 
+[debug] [2026-08-27T19:38:20.325Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:38:20.326Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:38:20.326Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/mscrm3-a777e/sites/mscrm3-a777e [none]
+[debug] [2026-08-27T19:38:21.412Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/mscrm3-a777e/sites/mscrm3-a777e 200
+[debug] [2026-08-27T19:38:21.412Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/mscrm3-a777e/sites/mscrm3-a777e {"name":"projects/mscrm3-a777e/sites/mscrm3-a777e","defaultUrl":"https://mscrm3-a777e.web.app","type":"DEFAULT_SITE"}
+[debug] [2026-08-27T19:38:21.415Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:38:21.415Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:38:21.416Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/mscrm3-a777e/versions [none]
+[debug] [2026-08-27T19:38:21.416Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/mscrm3-a777e/versions {"status":"CREATED","labels":{"deployment-tool":"cli-firebase","firebase-web-framework":"next"}}
+[debug] [2026-08-27T19:38:22.666Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/mscrm3-a777e/versions 200
+[debug] [2026-08-27T19:38:22.667Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/mscrm3-a777e/versions {"name":"projects/73264060901/sites/mscrm3-a777e/versions/7dc02b37923aa1e0","status":"CREATED","config":{},"labels":{"deployment-tool":"cli-firebase","firebase-web-framework":"next"}}
+[info] i  hosting[mscrm3-a777e]: beginning deploy... 
+[info] i  hosting[mscrm3-a777e]: found 54 files in .firebase\mscrm3-a777e\hosting 
+[debug] [2026-08-27T19:38:22.686Z] [hosting] uploading with 200 concurrency
+[debug] [2026-08-27T19:38:23.305Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:38:23.305Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:38:23.307Z] [hosting] hash cache [LmZpcmViYXNlXG1zY3JtMy1hNzc3ZVxob3N0aW5n] stored for 54 files
+[debug] [2026-08-27T19:38:23.307Z] [hosting][hash queue][FINAL] {"max":588,"min":22,"avg":304.2037037037036,"active":0,"complete":54,"success":54,"errored":0,"retried":0,"total":54,"elapsed":618}
+[debug] [2026-08-27T19:38:23.308Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/73264060901/sites/mscrm3-a777e/versions/7dc02b37923aa1e0:populateFiles [none]
+[debug] [2026-08-27T19:38:23.308Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/73264060901/sites/mscrm3-a777e/versions/7dc02b37923aa1e0:populateFiles {"files":{"/window.svg":"6bd2003bd35bb32c1c0d99ab3aeac0cc1edaefd79f27df1d954bc87184048d74","/vercel.svg":"529a1a21b4a82475a82db26173c28d7b27e2dc9d4b900eaf1c5329d96eea4ddd","/next.svg":"0665b9ab4493aa9d7e988b57024e28772ae543e804b8cf6b0a3633854b7c3c7f","/globe.svg":"6502a3e6120bf2d6e8417e7c40bb57fb8a6954de9c86d3f43076a75b60cd23a2","/file.svg":"5a09df6187e21aa9a7d05094389385876ac93c818e1dcbb77a26a8fe408bf79c","/pipeline.html":"a8b1356d2382863e0b11c9dda9f9634a2ecadcf4d8e423cdb28e534e74defdc0","/_global-error.html":"ae6778de684f4d212efa845c190e7df923c6b3c6d4a13c63d856abe76bd460f4","/_not-found.html":"0f32fe0aa47faf92146bfc46b785a938da176fcbc9801a7da58e7fcb3a040b9d","/settings.html":"20e54acd8aef2bee35a6bca26a95e2cc61c29612cd88197ae271041432c5f706","/login.html":"220cd089cc9d6e13d4258668de339712f7890438dfa591d6226d2034fd6eb7ee","/index.html":"eb0ba9adf2cc7af8b2b99ffc2e127407c0c5a918ab327d71e929445a23660967","/leads.html":"1555d78f27b16c64e45e009de6158e5c47f01f468252f562ff7679bb56e287c2","/follow-ups.html":"844c32b70f9f8552b02f2dde8307b2cafcb132712e5b334dce4e686f6b0b584a","/email.html":"9535fe5b3ad94354cf93929f5d0fc06aa1bbd3eb7ddc7cef5b499f69e44f4663","/404.html":"0f32fe0aa47faf92146bfc46b785a938da176fcbc9801a7da58e7fcb3a040b9d","/distributors.html":"220805dc3d2505a72a8f47d792de4d955c3e61cc4eb562a3287fa26f276b2a9f","/favicon.ico":"36eaaa9259cda5765c4061fa8b7bf61c74dbda3a2a721a0811c73f5dae61a2e9","/500.html":"ae6778de684f4d212efa845c190e7df923c6b3c6d4a13c63d856abe76bd460f4","/_next/static/waKQdRw--ETiCH4B2zql2/_ssgManifest.js":"dc28a4dc92fe352ed5d2201bd3972ce47691bc8e89e0400a68d1541d0567c6d5","/_next/static/waKQdRw--ETiCH4B2zql2/_clientMiddlewareManifest.js":"5e57f6166b702492ab9551af57e4546546c184673a4c0432f73b96f62820f7eb","/dashboard.html":"c9337f31d6d528520b363f52d108058dd394613203e1810032298ba89298bd71","/_next/static/media/ad66f9afd8947f86-s.3lvt2whj97whp.woff2":"21b0ae0980798b857a8228d5c0a8a31372bd0b5db034530c056f3b36b037e482","/_next/static/media/favicon.2vob68tjqpejf.ico":"36eaaa9259cda5765c4061fa8b7bf61c74dbda3a2a721a0811c73f5dae61a2e9","/_next/static/media/2bbe8d2671613f1f-s.0k62hbripvv8p.woff2":"5ef466d8ca6f4a51fa3751faea59ad2f63b15dbf9782ae4246bcadacc57f6b8f","/_next/static/waKQdRw--ETiCH4B2zql2/_buildManifest.js":"dcbe1c9b9159ca21caea98e1bad364012ae284e9551375ca62b83d2811efac91","/_next/static/chunks/3mc6dra1m0098.js":"567de1a3b37e6e27ff98d9dc654ca30012cbe0a29854e23976aba84e2d884122","/_next/static/chunks/turbopack-38heobxo5dkcx.js":"741a1a28fc8b69eec6afd7ca1dfab8c391668a13d3be87aa09d97b83e1543c3e","/_next/static/chunks/3la6-90r6j4gn.js":"b3225b026b2e1995314ca4373899db6764b043f6318926725618a5af69b0becc","/_next/static/chunks/3fntmmi971322.js":"bf886fbb3963f24b5eebcc6e33a72605a3e77fdc28771ad9f706f86109e26534","/_next/static/chunks/3axn_mblvu2lc.css":"44714b4dfc442bae4a67296fdd7c5a5f16a7e358679219020d6ac9d5eee9a586","/_next/static/chunks/2x_k-yxj27bki.css":"05d730a8740fe7df1eeeca3a47ec483f518b2a0ab2d2e7f929fe8f1cdec2315f","/_next/static/chunks/2q5vmdsjg93_p.js":"ad37068381c4d683bfa6512a82d0f1ad154b77d31275bc4105fd6b06308e02ac","/_next/static/chunks/293suv7qrnd2o.js":"aa162e1c29e47816fe4dcdd45d636331ae1898a7ef520a4b7bfc26ea2cc9f652","/_next/static/chunks/32f6-zrzs1dkx.js":"d3fff89f42dce7829467feaacfc9ec9a361b0ccff5b2f2c12ccd8c749a99efbb","/_next/static/chunks/31fhrsgdn789j.js":"a7d61085671ee0d70c2fbfa901e191327485b157effb29c61a7e40221897da19","/_next/static/chunks/2i51e627rllld.js":"2a2a78f2592256ad730f608feef37f97285c7e5758be95d8b367a80a2501d406","/_next/static/chunks/1z31a2yrk6kfs.js":"20a9736d5a8becc8c6ba418ac2cb3259f49bdd2b66e0d2d915f09cd59a292257","/_next/static/chunks/1jumuhri05udt.js":"b79269b24ba8b7396a83ada82d4cf8fb950a0b2907622a41f57b82137b753379","/_next/static/chunks/15qpiuzuh4pk2.js":"4416b0d4c322905a67b0aee0f75fd408b70cbdc376b914449f8f14676ae8313b","/_next/static/chunks/0rm78pm9n7sx4.js":"2a14c62cd76719bdc268c2efddb11378a2696597b264e00b84a755bafc3c2012","/_next/static/chunks/0x74qv3xhu0wa.js":"b45a67645e82da6a25bd84c1cd64cf6d31176c05fb6b9890097e3a2f73721394","/_next/static/chunks/0m_96c9vvcs75.js":"a7a670d6351ffe5e65d19db55b9b96a733b06751b3775b5012bcb6a3ab2e921f","/_next/static/media/9c72aa0f40e4eef8-s.1y4-pdgsjb-pw.woff2":"aeb03c5c1522d2fe6f6384711817dbd6cdbbb3dfa99276adf7325e9eacdae1ee","/_next/static/media/5476f68d60460930-s.2uwcyprjm3xu3.woff2":"c4de9995b3bb8a73da02308cb75721515f897229c3c422e51304e8afc4bdeccd","/_next/static/media/2c55a0e60120577a-s.0-dom-5bn10r2.woff2":"4ca02247386c89e13dde6791dd0632e3f22aaf94e91bc35ece0edf79ff3e0e77","/_next/static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2":"86835ac53a0e1de04820388d01b501389d5e9311509282b5e3bfbfc752754083","/_next/static/chunks/1rna3t2soeha4.js":"0d0c8eb4e3254e222b72cc20f074e75f756f54e99271da874bb1c7af99f296bb","/_next/static/chunks/05vv9el3z9_8_.js":"77a8c73b751312d8ff927b5f7733ce45397bc242a7229736206fad00cb8b37ca","/_next/static/media/1bffadaabf893a1e-s.3-6t-g6q0vh0a.woff2":"cd2992a875e4939d47289a3cc44c8b8a0e63817f4cc9fbd8b3bdf93b5f66fbb3","/_next/static/chunks/0lu07g0ds_6tc.js":"c9ad9d9c7da24fc0c574d96bde35ed483cde437f472568ad6aa48e49bd86203e","/_next/static/chunks/3byuobrkyz9bj.js":"51f7f9b73fa3efd28c5d833d7b1895d16a1286faf1b7d3f5e5654ed55bde3098","/_next/static/chunks/1o2h70ptx-s5f.js":"e9562112e118414b2fa184ce7c38983b1c62b5ae28721b7c2618388e783b3aef","/_next/static/chunks/3ig56yewl-mnj.js":"2d282a5406cb614f0b013e64420c2b4370b756ed51aa01d4ace3f1374bf120af","/_next/static/chunks/0cz1d0mv5g_q7.js":"18e28d3214eda45048d80d3925ea7627b809e69ad2e95f7f98459e9146a61c3d"}}
+[debug] [2026-08-27T19:38:24.179Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/73264060901/sites/mscrm3-a777e/versions/7dc02b37923aa1e0:populateFiles 200
+[debug] [2026-08-27T19:38:24.179Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/73264060901/sites/mscrm3-a777e/versions/7dc02b37923aa1e0:populateFiles {"uploadRequiredHashes":["9535fe5b3ad94354cf93929f5d0fc06aa1bbd3eb7ddc7cef5b499f69e44f4663","44714b4dfc442bae4a67296fdd7c5a5f16a7e358679219020d6ac9d5eee9a586","c9337f31d6d528520b363f52d108058dd394613203e1810032298ba89298bd71","0d0c8eb4e3254e222b72cc20f074e75f756f54e99271da874bb1c7af99f296bb","05d730a8740fe7df1eeeca3a47ec483f518b2a0ab2d2e7f929fe8f1cdec2315f","1555d78f27b16c64e45e009de6158e5c47f01f468252f562ff7679bb56e287c2","2a14c62cd76719bdc268c2efddb11378a2696597b264e00b84a755bafc3c2012","844c32b70f9f8552b02f2dde8307b2cafcb132712e5b334dce4e686f6b0b584a","0f32fe0aa47faf92146bfc46b785a938da176fcbc9801a7da58e7fcb3a040b9d","20e54acd8aef2bee35a6bca26a95e2cc61c29612cd88197ae271041432c5f706","a8b1356d2382863e0b11c9dda9f9634a2ecadcf4d8e423cdb28e534e74defdc0","220805dc3d2505a72a8f47d792de4d955c3e61cc4eb562a3287fa26f276b2a9f","eb0ba9adf2cc7af8b2b99ffc2e127407c0c5a918ab327d71e929445a23660967","220cd089cc9d6e13d4258668de339712f7890438dfa591d6226d2034fd6eb7ee","ae6778de684f4d212efa845c190e7df923c6b3c6d4a13c63d856abe76bd460f4"],"uploadUrl":"https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files"}
+[debug] [2026-08-27T19:38:24.180Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:38:24.180Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:38:24.180Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:38:24.180Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:38:24.180Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:38:24.180Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:38:24.181Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:38:24.181Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:38:24.181Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:38:24.181Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:38:24.181Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:38:24.181Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:38:24.181Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:38:24.181Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:38:24.181Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:38:24.181Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:38:24.182Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:38:24.182Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:38:24.182Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:38:24.182Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:38:24.182Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:38:24.182Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:38:24.182Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:38:24.183Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:38:24.183Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:38:24.183Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:38:24.183Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:38:24.183Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:38:24.183Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:38:24.183Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:38:24.184Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/9535fe5b3ad94354cf93929f5d0fc06aa1bbd3eb7ddc7cef5b499f69e44f4663 [none]
+[debug] [2026-08-27T19:38:24.184Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/9535fe5b3ad94354cf93929f5d0fc06aa1bbd3eb7ddc7cef5b499f69e44f4663 [stream]
+[debug] [2026-08-27T19:38:24.185Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/44714b4dfc442bae4a67296fdd7c5a5f16a7e358679219020d6ac9d5eee9a586 [none]
+[debug] [2026-08-27T19:38:24.185Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/44714b4dfc442bae4a67296fdd7c5a5f16a7e358679219020d6ac9d5eee9a586 [stream]
+[debug] [2026-08-27T19:38:24.186Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/c9337f31d6d528520b363f52d108058dd394613203e1810032298ba89298bd71 [none]
+[debug] [2026-08-27T19:38:24.186Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/c9337f31d6d528520b363f52d108058dd394613203e1810032298ba89298bd71 [stream]
+[debug] [2026-08-27T19:38:24.186Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/0d0c8eb4e3254e222b72cc20f074e75f756f54e99271da874bb1c7af99f296bb [none]
+[debug] [2026-08-27T19:38:24.186Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/0d0c8eb4e3254e222b72cc20f074e75f756f54e99271da874bb1c7af99f296bb [stream]
+[debug] [2026-08-27T19:38:24.187Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/05d730a8740fe7df1eeeca3a47ec483f518b2a0ab2d2e7f929fe8f1cdec2315f [none]
+[debug] [2026-08-27T19:38:24.187Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/05d730a8740fe7df1eeeca3a47ec483f518b2a0ab2d2e7f929fe8f1cdec2315f [stream]
+[debug] [2026-08-27T19:38:24.187Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/1555d78f27b16c64e45e009de6158e5c47f01f468252f562ff7679bb56e287c2 [none]
+[debug] [2026-08-27T19:38:24.188Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/1555d78f27b16c64e45e009de6158e5c47f01f468252f562ff7679bb56e287c2 [stream]
+[debug] [2026-08-27T19:38:24.188Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/2a14c62cd76719bdc268c2efddb11378a2696597b264e00b84a755bafc3c2012 [none]
+[debug] [2026-08-27T19:38:24.188Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/2a14c62cd76719bdc268c2efddb11378a2696597b264e00b84a755bafc3c2012 [stream]
+[debug] [2026-08-27T19:38:24.189Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/844c32b70f9f8552b02f2dde8307b2cafcb132712e5b334dce4e686f6b0b584a [none]
+[debug] [2026-08-27T19:38:24.189Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/844c32b70f9f8552b02f2dde8307b2cafcb132712e5b334dce4e686f6b0b584a [stream]
+[debug] [2026-08-27T19:38:24.189Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/0f32fe0aa47faf92146bfc46b785a938da176fcbc9801a7da58e7fcb3a040b9d [none]
+[debug] [2026-08-27T19:38:24.189Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/0f32fe0aa47faf92146bfc46b785a938da176fcbc9801a7da58e7fcb3a040b9d [stream]
+[debug] [2026-08-27T19:38:24.190Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/20e54acd8aef2bee35a6bca26a95e2cc61c29612cd88197ae271041432c5f706 [none]
+[debug] [2026-08-27T19:38:24.190Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/20e54acd8aef2bee35a6bca26a95e2cc61c29612cd88197ae271041432c5f706 [stream]
+[debug] [2026-08-27T19:38:24.190Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/a8b1356d2382863e0b11c9dda9f9634a2ecadcf4d8e423cdb28e534e74defdc0 [none]
+[debug] [2026-08-27T19:38:24.191Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/a8b1356d2382863e0b11c9dda9f9634a2ecadcf4d8e423cdb28e534e74defdc0 [stream]
+[debug] [2026-08-27T19:38:24.191Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/220805dc3d2505a72a8f47d792de4d955c3e61cc4eb562a3287fa26f276b2a9f [none]
+[debug] [2026-08-27T19:38:24.191Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/220805dc3d2505a72a8f47d792de4d955c3e61cc4eb562a3287fa26f276b2a9f [stream]
+[debug] [2026-08-27T19:38:24.192Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/eb0ba9adf2cc7af8b2b99ffc2e127407c0c5a918ab327d71e929445a23660967 [none]
+[debug] [2026-08-27T19:38:24.192Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/eb0ba9adf2cc7af8b2b99ffc2e127407c0c5a918ab327d71e929445a23660967 [stream]
+[debug] [2026-08-27T19:38:24.192Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/220cd089cc9d6e13d4258668de339712f7890438dfa591d6226d2034fd6eb7ee [none]
+[debug] [2026-08-27T19:38:24.192Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/220cd089cc9d6e13d4258668de339712f7890438dfa591d6226d2034fd6eb7ee [stream]
+[debug] [2026-08-27T19:38:24.193Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/ae6778de684f4d212efa845c190e7df923c6b3c6d4a13c63d856abe76bd460f4 [none]
+[debug] [2026-08-27T19:38:24.193Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/ae6778de684f4d212efa845c190e7df923c6b3c6d4a13c63d856abe76bd460f4 [stream]
+[debug] [2026-08-27T19:38:24.205Z] [hosting][populate queue][FINAL] {"max":878,"min":878,"avg":878,"active":0,"complete":1,"success":1,"errored":0,"retried":0,"total":1,"elapsed":900}
+[debug] [2026-08-27T19:38:24.205Z] [hosting] uploads queued: 15
+[info] i  hosting: uploading new files [0/15] (0%) 
+[debug] [2026-08-27T19:38:25.446Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/05d730a8740fe7df1eeeca3a47ec483f518b2a0ab2d2e7f929fe8f1cdec2315f 200
+[debug] [2026-08-27T19:38:25.447Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/05d730a8740fe7df1eeeca3a47ec483f518b2a0ab2d2e7f929fe8f1cdec2315f [stream]
+[debug] [2026-08-27T19:38:25.606Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/c9337f31d6d528520b363f52d108058dd394613203e1810032298ba89298bd71 200
+[debug] [2026-08-27T19:38:25.606Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/c9337f31d6d528520b363f52d108058dd394613203e1810032298ba89298bd71 [stream]
+[debug] [2026-08-27T19:38:25.607Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/eb0ba9adf2cc7af8b2b99ffc2e127407c0c5a918ab327d71e929445a23660967 200
+[debug] [2026-08-27T19:38:25.607Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/eb0ba9adf2cc7af8b2b99ffc2e127407c0c5a918ab327d71e929445a23660967 [stream]
+[debug] [2026-08-27T19:38:25.661Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/1555d78f27b16c64e45e009de6158e5c47f01f468252f562ff7679bb56e287c2 200
+[debug] [2026-08-27T19:38:25.661Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/1555d78f27b16c64e45e009de6158e5c47f01f468252f562ff7679bb56e287c2 [stream]
+[debug] [2026-08-27T19:38:25.662Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/844c32b70f9f8552b02f2dde8307b2cafcb132712e5b334dce4e686f6b0b584a 200
+[debug] [2026-08-27T19:38:25.662Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/844c32b70f9f8552b02f2dde8307b2cafcb132712e5b334dce4e686f6b0b584a [stream]
+[debug] [2026-08-27T19:38:25.665Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/2a14c62cd76719bdc268c2efddb11378a2696597b264e00b84a755bafc3c2012 200
+[debug] [2026-08-27T19:38:25.665Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/2a14c62cd76719bdc268c2efddb11378a2696597b264e00b84a755bafc3c2012 [stream]
+[debug] [2026-08-27T19:38:25.688Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/9535fe5b3ad94354cf93929f5d0fc06aa1bbd3eb7ddc7cef5b499f69e44f4663 200
+[debug] [2026-08-27T19:38:25.689Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/9535fe5b3ad94354cf93929f5d0fc06aa1bbd3eb7ddc7cef5b499f69e44f4663 [stream]
+[debug] [2026-08-27T19:38:25.703Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/20e54acd8aef2bee35a6bca26a95e2cc61c29612cd88197ae271041432c5f706 200
+[debug] [2026-08-27T19:38:25.704Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/20e54acd8aef2bee35a6bca26a95e2cc61c29612cd88197ae271041432c5f706 [stream]
+[debug] [2026-08-27T19:38:25.708Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/ae6778de684f4d212efa845c190e7df923c6b3c6d4a13c63d856abe76bd460f4 200
+[debug] [2026-08-27T19:38:25.708Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/ae6778de684f4d212efa845c190e7df923c6b3c6d4a13c63d856abe76bd460f4 [stream]
+[debug] [2026-08-27T19:38:25.769Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/220cd089cc9d6e13d4258668de339712f7890438dfa591d6226d2034fd6eb7ee 200
+[debug] [2026-08-27T19:38:25.769Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/220cd089cc9d6e13d4258668de339712f7890438dfa591d6226d2034fd6eb7ee [stream]
+[debug] [2026-08-27T19:38:25.770Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/0f32fe0aa47faf92146bfc46b785a938da176fcbc9801a7da58e7fcb3a040b9d 200
+[debug] [2026-08-27T19:38:25.770Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/0f32fe0aa47faf92146bfc46b785a938da176fcbc9801a7da58e7fcb3a040b9d [stream]
+[debug] [2026-08-27T19:38:25.774Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/a8b1356d2382863e0b11c9dda9f9634a2ecadcf4d8e423cdb28e534e74defdc0 200
+[debug] [2026-08-27T19:38:25.774Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/a8b1356d2382863e0b11c9dda9f9634a2ecadcf4d8e423cdb28e534e74defdc0 [stream]
+[debug] [2026-08-27T19:38:25.779Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/0d0c8eb4e3254e222b72cc20f074e75f756f54e99271da874bb1c7af99f296bb 200
+[debug] [2026-08-27T19:38:25.779Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/0d0c8eb4e3254e222b72cc20f074e75f756f54e99271da874bb1c7af99f296bb [stream]
+[debug] [2026-08-27T19:38:25.860Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/220805dc3d2505a72a8f47d792de4d955c3e61cc4eb562a3287fa26f276b2a9f 200
+[debug] [2026-08-27T19:38:25.860Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/220805dc3d2505a72a8f47d792de4d955c3e61cc4eb562a3287fa26f276b2a9f [stream]
+[debug] [2026-08-27T19:38:25.871Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/44714b4dfc442bae4a67296fdd7c5a5f16a7e358679219020d6ac9d5eee9a586 200
+[debug] [2026-08-27T19:38:25.872Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/mscrm3-a777e/versions/7dc02b37923aa1e0/files/44714b4dfc442bae4a67296fdd7c5a5f16a7e358679219020d6ac9d5eee9a586 [stream]
+[debug] [2026-08-27T19:38:25.872Z] [hosting][upload queue][FINAL] {"max":1692,"min":1266,"avg":1523.6,"active":0,"complete":15,"success":15,"errored":0,"retried":0,"total":15,"elapsed":1693}
+[info] i  hosting: upload complete 
+[info] +  hosting[mscrm3-a777e]: file upload complete 
+[debug] [2026-08-27T19:38:25.873Z] [hosting] deploy completed after 3203ms
+[debug] [2026-08-27T19:38:25.873Z] [
+  {
+    "config": {
+      "source": ".",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "frameworksBackend": {
+        "region": "us-central1"
+      },
+      "site": "mscrm3-a777e",
+      "rewrites": [],
+      "redirects": [],
+      "headers": [
+        {
+          "source": "/_not-found",
+          "headers": [
+            {
+              "key": "x-nextjs-stale-time",
+              "value": "300"
+            },
+            {
+              "key": "x-nextjs-prerender",
+              "value": "1"
+            },
+            {
+              "key": "x-next-cache-tags",
+              "value": "_N_T_/layout,_N_T_/_not-found/layout,_N_T_/_not-found/page,_N_T_/_not-found"
+            }
+          ]
+        },
+        {
+          "source": "/distributors",
+          "headers": [
+            {
+              "key": "x-nextjs-stale-time",
+              "value": "300"
+            },
+            {
+              "key": "x-nextjs-prerender",
+              "value": "1"
+            },
+            {
+              "key": "x-next-cache-tags",
+              "value": "_N_T_/layout,_N_T_/distributors/layout,_N_T_/distributors/page,_N_T_/distributors"
+            }
+          ]
+        },
+        {
+          "source": "/leads",
+          "headers": [
+            {
+              "key": "x-nextjs-stale-time",
+              "value": "300"
+            },
+            {
+              "key": "x-nextjs-prerender",
+              "value": "1"
+            },
+            {
+              "key": "x-next-cache-tags",
+              "value": "_N_T_/layout,_N_T_/leads/layout,_N_T_/leads/page,_N_T_/leads"
+            }
+          ]
+        },
+        {
+          "source": "/dashboard",
+          "headers": [
+            {
+              "key": "x-nextjs-stale-time",
+              "value": "300"
+            },
+            {
+              "key": "x-nextjs-prerender",
+              "value": "1"
+            },
+            {
+              "key": "x-next-cache-tags",
+              "value": "_N_T_/layout,_N_T_/dashboard/layout,_N_T_/dashboard/page,_N_T_/dashboard"
+            }
+          ]
+        },
+        {
+          "source": "/_global-error",
+          "headers": [
+            {
+              "key": "x-nextjs-stale-time",
+              "value": "300"
+            },
+            {
+              "key": "x-nextjs-prerender",
+              "value": "1"
+            },
+            {
+              "key": "x-next-cache-tags",
+              "value": "_N_T_/layout,_N_T_/_global-error/layout,_N_T_/_global-error/page,_N_T_/_global-error"
+            }
+          ]
+        },
+        {
+          "source": "/settings",
+          "headers": [
+            {
+              "key": "x-nextjs-stale-time",
+              "value": "300"
+            },
+            {
+              "key": "x-nextjs-prerender",
+              "value": "1"
+            },
+            {
+              "key": "x-next-cache-tags",
+              "value": "_N_T_/layout,_N_T_/settings/layout,_N_T_/settings/page,_N_T_/settings"
+            }
+          ]
+        },
+        {
+          "source": "/email",
+          "headers": [
+            {
+              "key": "x-nextjs-stale-time",
+              "value": "300"
+            },
+            {
+              "key": "x-nextjs-prerender",
+              "value": "1"
+            },
+            {
+              "key": "x-next-cache-tags",
+              "value": "_N_T_/layout,_N_T_/email/layout,_N_T_/email/page,_N_T_/email"
+            }
+          ]
+        },
+        {
+          "source": "/follow-ups",
+          "headers": [
+            {
+              "key": "x-nextjs-stale-time",
+              "value": "300"
+            },
+            {
+              "key": "x-nextjs-prerender",
+              "value": "1"
+            },
+            {
+              "key": "x-next-cache-tags",
+              "value": "_N_T_/layout,_N_T_/follow-ups/layout,_N_T_/follow-ups/page,_N_T_/follow-ups"
+            }
+          ]
+        },
+        {
+          "source": "/pipeline",
+          "headers": [
+            {
+              "key": "x-nextjs-stale-time",
+              "value": "300"
+            },
+            {
+              "key": "x-nextjs-prerender",
+              "value": "1"
+            },
+            {
+              "key": "x-next-cache-tags",
+              "value": "_N_T_/layout,_N_T_/pipeline/layout,_N_T_/pipeline/page,_N_T_/pipeline"
+            }
+          ]
+        },
+        {
+          "source": "/login",
+          "headers": [
+            {
+              "key": "x-nextjs-stale-time",
+              "value": "300"
+            },
+            {
+              "key": "x-nextjs-prerender",
+              "value": "1"
+            },
+            {
+              "key": "x-next-cache-tags",
+              "value": "_N_T_/layout,_N_T_/login/layout,_N_T_/login/page,_N_T_/login"
+            }
+          ]
+        },
+        {
+          "source": "/favicon.ico",
+          "headers": [
+            {
+              "key": "cache-control",
+              "value": "public, max-age=0, must-revalidate"
+            },
+            {
+              "key": "content-type",
+              "value": "image/x-icon"
+            },
+            {
+              "key": "x-next-cache-tags",
+              "value": "_N_T_/layout,_N_T_/favicon.ico/layout,_N_T_/favicon.ico/route,_N_T_/favicon.ico"
+            }
+          ]
+        },
+        {
+          "source": "**/*.[jt]s",
+          "headers": [
+            {
+              "key": "Set-Cookie",
+              "value": "__FIREBASE_DEFAULTS__=eyJjb25maWciOnsicHJvamVjdElkIjoibXNjcm0zLWE3NzdlIiwiYXBwSWQiOiIxOjczMjY0MDYwOTAxOndlYjo2M2MzN2YwYTc0MzZhYzFjNGFiNzBjIiwic3RvcmFnZUJ1Y2tldCI6Im1zY3JtMy1hNzc3ZS5maXJlYmFzZXN0b3JhZ2UuYXBwIiwiYXBpS2V5IjoiQUl6YVN5RHNDbGRpRE0yalVhVGltWjN5QlN6ZHFrNTF5RUd0WkVVIiwiYXV0aERvbWFpbiI6Im1zY3JtMy1hNzc3ZS5maXJlYmFzZWFwcC5jb20iLCJtZXNzYWdpbmdTZW5kZXJJZCI6IjczMjY0MDYwOTAxIiwicHJvamVjdE51bWJlciI6IjczMjY0MDYwOTAxIiwidmVyc2lvbiI6IjIifX0; SameSite=Strict; Expires=2028-07-22T06:18:20.324Z; Path=/;"
+            }
+          ]
+        }
+      ],
+      "cleanUrls": true,
+      "trailingSlash": false,
+      "public": ".firebase\\mscrm3-a777e\\hosting",
+      "webFramework": "next"
+    },
+    "version": "projects/73264060901/sites/mscrm3-a777e/versions/7dc02b37923aa1e0"
+  }
+]
+[info] i  hosting[mscrm3-a777e]: finalizing version... 
+[debug] [2026-08-27T19:38:25.879Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:38:25.880Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:38:25.880Z] >>> [apiv2][query] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/mscrm3-a777e/versions/7dc02b37923aa1e0 updateMask=status%2Cconfig
+[debug] [2026-08-27T19:38:25.880Z] >>> [apiv2][body] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/mscrm3-a777e/versions/7dc02b37923aa1e0 {"status":"FINALIZED","config":{"rewrites":[],"redirects":[],"headers":[{"glob":"/_not-found","headers":{"x-nextjs-stale-time":"300","x-nextjs-prerender":"1","x-next-cache-tags":"_N_T_/layout,_N_T_/_not-found/layout,_N_T_/_not-found/page,_N_T_/_not-found"}},{"glob":"/distributors","headers":{"x-nextjs-stale-time":"300","x-nextjs-prerender":"1","x-next-cache-tags":"_N_T_/layout,_N_T_/distributors/layout,_N_T_/distributors/page,_N_T_/distributors"}},{"glob":"/leads","headers":{"x-nextjs-stale-time":"300","x-nextjs-prerender":"1","x-next-cache-tags":"_N_T_/layout,_N_T_/leads/layout,_N_T_/leads/page,_N_T_/leads"}},{"glob":"/dashboard","headers":{"x-nextjs-stale-time":"300","x-nextjs-prerender":"1","x-next-cache-tags":"_N_T_/layout,_N_T_/dashboard/layout,_N_T_/dashboard/page,_N_T_/dashboard"}},{"glob":"/_global-error","headers":{"x-nextjs-stale-time":"300","x-nextjs-prerender":"1","x-next-cache-tags":"_N_T_/layout,_N_T_/_global-error/layout,_N_T_/_global-error/page,_N_T_/_global-error"}},{"glob":"/settings","headers":{"x-nextjs-stale-time":"300","x-nextjs-prerender":"1","x-next-cache-tags":"_N_T_/layout,_N_T_/settings/layout,_N_T_/settings/page,_N_T_/settings"}},{"glob":"/email","headers":{"x-nextjs-stale-time":"300","x-nextjs-prerender":"1","x-next-cache-tags":"_N_T_/layout,_N_T_/email/layout,_N_T_/email/page,_N_T_/email"}},{"glob":"/follow-ups","headers":{"x-nextjs-stale-time":"300","x-nextjs-prerender":"1","x-next-cache-tags":"_N_T_/layout,_N_T_/follow-ups/layout,_N_T_/follow-ups/page,_N_T_/follow-ups"}},{"glob":"/pipeline","headers":{"x-nextjs-stale-time":"300","x-nextjs-prerender":"1","x-next-cache-tags":"_N_T_/layout,_N_T_/pipeline/layout,_N_T_/pipeline/page,_N_T_/pipeline"}},{"glob":"/login","headers":{"x-nextjs-stale-time":"300","x-nextjs-prerender":"1","x-next-cache-tags":"_N_T_/layout,_N_T_/login/layout,_N_T_/login/page,_N_T_/login"}},{"glob":"/favicon.ico","headers":{"cache-control":"public, max-age=0, must-revalidate","content-type":"image/x-icon","x-next-cache-tags":"_N_T_/layout,_N_T_/favicon.ico/layout,_N_T_/favicon.ico/route,_N_T_/favicon.ico"}},{"glob":"**/*.[jt]s","headers":{"Set-Cookie":"__FIREBASE_DEFAULTS__=eyJjb25maWciOnsicHJvamVjdElkIjoibXNjcm0zLWE3NzdlIiwiYXBwSWQiOiIxOjczMjY0MDYwOTAxOndlYjo2M2MzN2YwYTc0MzZhYzFjNGFiNzBjIiwic3RvcmFnZUJ1Y2tldCI6Im1zY3JtMy1hNzc3ZS5maXJlYmFzZXN0b3JhZ2UuYXBwIiwiYXBpS2V5IjoiQUl6YVN5RHNDbGRpRE0yalVhVGltWjN5QlN6ZHFrNTF5RUd0WkVVIiwiYXV0aERvbWFpbiI6Im1zY3JtMy1hNzc3ZS5maXJlYmFzZWFwcC5jb20iLCJtZXNzYWdpbmdTZW5kZXJJZCI6IjczMjY0MDYwOTAxIiwicHJvamVjdE51bWJlciI6IjczMjY0MDYwOTAxIiwidmVyc2lvbiI6IjIifX0; SameSite=Strict; Expires=2028-07-22T06:18:20.324Z; Path=/;"}}],"cleanUrls":true,"trailingSlashBehavior":"REMOVE"}}
+[debug] [2026-08-27T19:38:26.744Z] <<< [apiv2][status] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/mscrm3-a777e/versions/7dc02b37923aa1e0 200
+[debug] [2026-08-27T19:38:26.744Z] <<< [apiv2][body] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/mscrm3-a777e/versions/7dc02b37923aa1e0 {"name":"projects/73264060901/sites/mscrm3-a777e/versions/7dc02b37923aa1e0","status":"FINALIZED","config":{"headers":[{"headers":{"x-nextjs-prerender":"1","x-next-cache-tags":"_N_T_/layout,_N_T_/_not-found/layout,_N_T_/_not-found/page,_N_T_/_not-found","x-nextjs-stale-time":"300"},"glob":"/_not-found"},{"headers":{"x-next-cache-tags":"_N_T_/layout,_N_T_/distributors/layout,_N_T_/distributors/page,_N_T_/distributors","x-nextjs-stale-time":"300","x-nextjs-prerender":"1"},"glob":"/distributors"},{"headers":{"x-nextjs-stale-time":"300","x-nextjs-prerender":"1","x-next-cache-tags":"_N_T_/layout,_N_T_/leads/layout,_N_T_/leads/page,_N_T_/leads"},"glob":"/leads"},{"headers":{"x-next-cache-tags":"_N_T_/layout,_N_T_/dashboard/layout,_N_T_/dashboard/page,_N_T_/dashboard","x-nextjs-stale-time":"300","x-nextjs-prerender":"1"},"glob":"/dashboard"},{"headers":{"x-nextjs-prerender":"1","x-next-cache-tags":"_N_T_/layout,_N_T_/_global-error/layout,_N_T_/_global-error/page,_N_T_/_global-error","x-nextjs-stale-time":"300"},"glob":"/_global-error"},{"headers":{"x-next-cache-tags":"_N_T_/layout,_N_T_/settings/layout,_N_T_/settings/page,_N_T_/settings","x-nextjs-stale-time":"300","x-nextjs-prerender":"1"},"glob":"/settings"},{"headers":{"x-next-cache-tags":"_N_T_/layout,_N_T_/email/layout,_N_T_/email/page,_N_T_/email","x-nextjs-stale-time":"300","x-nextjs-prerender":"1"},"glob":"/email"},{"headers":{"x-nextjs-prerender":"1","x-next-cache-tags":"_N_T_/layout,_N_T_/follow-ups/layout,_N_T_/follow-ups/page,_N_T_/follow-ups","x-nextjs-stale-time":"300"},"glob":"/follow-ups"},{"headers":{"x-nextjs-prerender":"1","x-next-cache-tags":"_N_T_/layout,_N_T_/pipeline/layout,_N_T_/pipeline/page,_N_T_/pipeline","x-nextjs-stale-time":"300"},"glob":"/pipeline"},{"headers":{"x-next-cache-tags":"_N_T_/layout,_N_T_/login/layout,_N_T_/login/page,_N_T_/login","x-nextjs-stale-time":"300","x-nextjs-prerender":"1"},"glob":"/login"},{"headers":{"x-next-cache-tags":"_N_T_/layout,_N_T_/favicon.ico/layout,_N_T_/favicon.ico/route,_N_T_/favicon.ico","cache-control":"public, max-age=0, must-revalidate","content-type":"image/x-icon"},"glob":"/favicon.ico"},{"headers":{"Set-Cookie":"__FIREBASE_DEFAULTS__=eyJjb25maWciOnsicHJvamVjdElkIjoibXNjcm0zLWE3NzdlIiwiYXBwSWQiOiIxOjczMjY0MDYwOTAxOndlYjo2M2MzN2YwYTc0MzZhYzFjNGFiNzBjIiwic3RvcmFnZUJ1Y2tldCI6Im1zY3JtMy1hNzc3ZS5maXJlYmFzZXN0b3JhZ2UuYXBwIiwiYXBpS2V5IjoiQUl6YVN5RHNDbGRpRE0yalVhVGltWjN5QlN6ZHFrNTF5RUd0WkVVIiwiYXV0aERvbWFpbiI6Im1zY3JtMy1hNzc3ZS5maXJlYmFzZWFwcC5jb20iLCJtZXNzYWdpbmdTZW5kZXJJZCI6IjczMjY0MDYwOTAxIiwicHJvamVjdE51bWJlciI6IjczMjY0MDYwOTAxIiwidmVyc2lvbiI6IjIifX0; SameSite=Strict; Expires=2028-07-22T06:18:20.324Z; Path=/;"},"glob":"**/*.[jt]s"}],"cleanUrls":true,"trailingSlashBehavior":"REMOVE"},"labels":{"deployment-tool":"cli-firebase","firebase-web-framework":"next"},"createTime":"2026-08-27T19:38:20.420659Z","createUser":{"email":"aryamaanagarwal9@gmail.com"},"finalizeTime":"2026-08-27T19:38:25.212024Z","finalizeUser":{"email":"aryamaanagarwal9@gmail.com"}}
+[debug] [2026-08-27T19:38:26.745Z] [hosting] finalized version for mscrm3-a777e:[object Object]
+[info] +  hosting[mscrm3-a777e]: version finalized 
+[info] i  hosting[mscrm3-a777e]: releasing new version... 
+[debug] [2026-08-27T19:38:26.745Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:38:26.745Z] Checked if tokens are valid: true, expires at: 1787861451835
+[debug] [2026-08-27T19:38:26.745Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/mscrm3-a777e/channels/live/releases versionName=projects%2F73264060901%2Fsites%2Fmscrm3-a777e%2Fversions%2F7dc02b37923aa1e0
+[debug] [2026-08-27T19:38:26.745Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/mscrm3-a777e/channels/live/releases {}
+[debug] [2026-08-27T19:38:27.637Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/mscrm3-a777e/channels/live/releases 200

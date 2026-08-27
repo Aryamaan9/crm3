@@ -11,6 +11,7 @@ Welcome to the **Modern CRM (mscrm3-a777e)** codebase. This document contains ev
   - `@hello-pangea/dnd` (for Pipeline Kanban)
   - `recharts` (for Dashboard Analytics)
   - `react-hot-toast` (for global notifications)
+  - `react-datasheet-grid` (for the native Excel-like grid experience)
   - `playwright` (for E2E testing)
 
 ## Database Schema (Firestore)
@@ -38,9 +39,9 @@ Welcome to the **Modern CRM (mscrm3-a777e)** codebase. This document contains ev
 
 ## Current Core Modules
 - **Settings (`/settings`)**: Tabbed interface. Manages Global `leadStages`, `investorTypes`, `customFields`, and User roles (`admin`, `senior`, `junior`).
-- **Leads (`/leads`)**: Tabular view with dual modes.
+- **Leads (`/leads`)**: Tabular view with dual modes. Contains an **Advanced Filters** popover for multi-dimensional filtering (Stage & Type).
   - **Standard Mode**: Checkboxes and `LeadSlideOver.tsx` for deep editing.
-  - **Excel Mode**: Arrow-key navigation, inline editing, robust multi-cell paste from Excel (auto-creates new rows for overflow), and inline row deletion via trash icons.
+  - **Excel Mode**: Powered entirely by `react-datasheet-grid` via `LeadsDataSheet.tsx`. Supports native multi-cell drag selection, external copy-paste (auto-creates new rows for overflow), context menus for deletion, and keyboard navigation.
 - **Pipeline (`/pipeline`)**: Drag-and-drop Kanban board mapped dynamically to `leadStage`.
 - **Email (`/email`)**: SPA for composing targeted investor updates with live HTML preview and dynamic tag insertion (`{{first_name}}`). Includes a live **Campaign History & Queue** table reflecting the `email_queue` collection metrics.
 - **Dashboard (`/dashboard`)**: Analytics powered by `recharts`.
