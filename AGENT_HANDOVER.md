@@ -51,4 +51,10 @@ Welcome to the **Modern CRM (mscrm3-a777e)** codebase. This document contains ev
 - Deploy: `cmd.exe /c "npx firebase-tools deploy --only hosting --project mscrm3-a777e"`
 - Test: `cmd.exe /c "npx playwright test"`
 
+## Upcoming Roadmap / Tasks for Next Agent
+The following items are immediate priorities requested by the user:
+1. **Fix Excel Mode Context Menu Bug:** Right-clicking inside the `react-datasheet-grid` currently opens *both* the browser's native context menu and the grid's context menu. Need to ensure `e.preventDefault()` is properly applied to block the native browser menu on right-click within the grid.
+2. **Column Header Filters & Sorting:** Implement sorting and filtering options directly inside the header portion of the main Leads table (so users can sort by name, org, filter by specific columns inline, etc.).
+3. **Goal-Based Checking:** Implement a "goal based checking option" that spans the Excel function, main lead table, and database synchronization to ensure data targets are met/validated visually.
+
 *End of Handover*
