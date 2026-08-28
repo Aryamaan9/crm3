@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { collection, getDocs, addDoc, Timestamp, query, orderBy } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
-import { Mail, Send, CheckCircle2, Eye, MousePointerClick, AlertCircle, Settings2, Plus, X, Search, Filter, Clock } from "lucide-react";
+import { Mail, Send, CheckCircle2, Eye, MousePointerClick, AlertCircle, Settings2, Plus, X, Search, Filter, Clock, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
@@ -33,6 +33,10 @@ export default function EmailModule() {
   const [typeFilter, setTypeFilter] = useState("All Types");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedLeads, setSelectedLeads] = useState<Set<string>>(new Set());
+  
+  // Sending State
+  const [isSending, setIsSending] = useState(false);
+  const [sendProgress, setSendProgress] = useState({ current: 0, total: 0 });
 
   const bodyRef = useRef<HTMLTextAreaElement>(null);
 
@@ -116,19 +120,73 @@ export default function EmailModule() {
   const sendCampaign = async () => {
     if (selectedLeads.size === 0) return toast.error("Select at least 1 recipient.");
     if (!subject || !body || !campaignName) return toast.error("Fill in all campaign details.");
+    if (!settings.emailConfig?.apiKey) return toast.error("Brevo API Key is not configured in Settings.");
+    
+    setIsSending(true);
+    setSendProgress({ current: 0, total: selectedLeads.size });
     
     try {
+      const selectedIds = Array.from(selectedLeads);
+      const BATCH_SIZE = 50;
+      let sentCount = 0;
+      
+      for (let i = 0; i < selectedIds.length; i += BATCH_SIZE) {
+        const batchIds = selectedIds.slice(i, i + BATCH_SIZE);
+        const batchLeads = leads.filter(l => batchIds.includes(l.id));
+        
+        // Convert our tags {{first_name}} to Brevo tags {{params.first_name}}
+        let brevoSubject = subject.replace(/{{/g, '{{params.');
+        let brevoHtml = body.replace(/{{/g, '{{params.');
+
+        // Prepare message versions for bulk personalized sending
+        const messageVersions = batchLeads.map((lead: any) => ({
+          to: [{ email: lead.email, name: `${lead.firstName || ''} ${lead.lastName || ''}`.trim() }],
+          params: {
+            first_name: lead.firstName || '',
+            last_name: lead.lastName || '',
+            organization: lead.organization || '',
+            email: lead.email || '',
+            investor_type: lead.investorType || '',
+            lead_stage: lead.leadStage || '',
+            current_country: lead.currentCountry || ''
+          }
+        }));
+        
+        const res = await fetch('https://api.brevo.com/v3/smtp/email', {
+          method: 'POST',
+          headers: {
+            'accept': 'application/json',
+            'api-key': settings.emailConfig.apiKey,
+            'content-type': 'application/json'
+          },
+          body: JSON.stringify({
+            sender: { email: settings.emailConfig.senderEmail || 'ir@moneystories.in', name: sender || 'CRM' },
+            subject: brevoSubject,
+            htmlContent: brevoHtml,
+            messageVersions
+          })
+        });
+        
+        if (!res.ok) {
+          throw new Error('Failed to send batch');
+        }
+        
+        sentCount += batchLeads.length;
+        setSendProgress(prev => ({ ...prev, current: sentCount }));
+      }
+      
       await addDoc(collection(db, "email_queue"), {
         campaignName,
         sender,
         subject,
         bodyTemplate: body,
-        recipientIds: Array.from(selectedLeads),
-        status: "queued",
+        recipientIds: selectedIds,
+        status: "sent",
         createdAt: Timestamp.now(),
         createdBy: user?.uid
       });
-      toast.success(`Campaign "${campaignName}" queued for ${selectedLeads.size} recipients!`);
+      
+      toast.success(`Campaign "${campaignName}" sent to ${selectedIds.length} recipients!`);
       setView('dashboard');
       // Reset compose state
       setCampaignName("");
@@ -136,7 +194,22 @@ export default function EmailModule() {
       setSelectedLeads(new Set());
       await fetchCampaigns();
     } catch (err) {
-      toast.error("Failed to queue campaign");
+      toast.error("Failed to send campaign. Please check your Brevo settings.");
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  const deleteCampaign = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this campaign record?")) return;
+    try {
+      // Need to import deleteDoc and doc
+      const { deleteDoc, doc } = await import('firebase/firestore');
+      await deleteDoc(doc(db, "email_queue", id));
+      setCampaigns(prev => prev.filter(c => c.id !== id));
+      toast.success("Campaign deleted");
+    } catch (err) {
+      toast.error("Failed to delete campaign");
     }
   };
 
@@ -223,16 +296,17 @@ export default function EmailModule() {
                     <th className="px-6 py-4">Status</th>
                     <th className="px-6 py-4">Recipients</th>
                     <th className="px-6 py-4">Date Queued</th>
+                    <th className="px-6 py-4 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {campaigns.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="px-6 py-8 text-center text-slate-500">No campaigns found.</td>
+                      <td colSpan={6} className="px-6 py-8 text-center text-slate-500">No campaigns found.</td>
                     </tr>
                   ) : (
                     campaigns.map(c => (
-                      <tr key={c.id} className="hover:bg-slate-50 transition-colors">
+                      <tr key={c.id} className="hover:bg-slate-50 transition-colors group">
                         <td className="px-6 py-4 font-medium text-slate-900">{c.campaignName}</td>
                         <td className="px-6 py-4 text-slate-600 max-w-xs truncate">{c.subject}</td>
                         <td className="px-6 py-4">
@@ -243,6 +317,15 @@ export default function EmailModule() {
                         <td className="px-6 py-4 text-slate-600">{c.recipientIds?.length || 0} users</td>
                         <td className="px-6 py-4 text-slate-500">
                           {c.createdAt ? format(c.createdAt.toDate(), "MMM d, yyyy h:mm a") : "-"}
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <button 
+                            onClick={() => deleteCampaign(c.id)}
+                            className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded opacity-0 group-hover:opacity-100 transition-all"
+                            title="Delete Campaign"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
                         </td>
                       </tr>
                     ))
@@ -268,9 +351,10 @@ export default function EmailModule() {
             <div className="flex items-center gap-3">
               <button 
                 onClick={sendCampaign}
-                className="px-6 py-2 bg-slate-900 text-white rounded-md font-medium text-sm hover:bg-slate-800 shadow-sm transition-colors"
+                disabled={isSending}
+                className="px-6 py-2 bg-slate-900 text-white rounded-md font-medium text-sm hover:bg-slate-800 shadow-sm transition-colors disabled:opacity-75 disabled:cursor-wait"
               >
-                Compose
+                {isSending ? `Sending... ${sendProgress.current}/${sendProgress.total}` : "Send Campaign"}
               </button>
               <button 
                 onClick={() => setBodyMode('rendered')}
