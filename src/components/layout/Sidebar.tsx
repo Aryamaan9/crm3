@@ -25,6 +25,7 @@ const NAV_ITEMS = [
   { name: "Email", href: "/email", icon: Mail },
   { name: "Distributors", href: "/distributors", icon: UsersRound },
   { name: "Settings", href: "/settings", icon: Settings },
+  { name: "Import", href: "/import", icon: Copy },
 ];
 
 export function Sidebar() {
