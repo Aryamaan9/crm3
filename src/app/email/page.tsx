@@ -37,6 +37,7 @@ export default function EmailModule() {
   // Sending State
   const [isSending, setIsSending] = useState(false);
   const [sendProgress, setSendProgress] = useState({ current: 0, total: 0 });
+  const [composeStep, setComposeStep] = useState(1);
 
   const bodyRef = useRef<HTMLTextAreaElement>(null);
 
@@ -305,31 +306,240 @@ export default function EmailModule() {
                       <td colSpan={6} className="px-6 py-8 text-center text-slate-500">No campaigns found.</td>
                     </tr>
                   ) : (
-                    campaigns.map(c => (
-                      <tr key={c.id} className="hover:bg-slate-50 transition-colors group">
-                        <td className="px-6 py-4 font-medium text-slate-900">{c.campaignName}</td>
-                        <td className="px-6 py-4 text-slate-600 max-w-xs truncate">{c.subject}</td>
-                        <td className="px-6 py-4">
-                          <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium uppercase tracking-wider ${c.status === 'queued' ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'}`}>
-                            {c.status}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 text-slate-600">{c.recipientIds?.length || 0} users</td>
-                        <td className="px-6 py-4 text-slate-500">
-                          {c.createdAt ? format(c.createdAt.toDate(), "MMM d, yyyy h:mm a") : "-"}
-                        </td>
-                        <td className="px-6 py-4 text-right">
-                          <button 
-                            onClick={() => deleteCampaign(c.id)}
-                            className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded opacity-0 group-hover:opacity-100 transition-all"
-                            title="Delete Campaign"
+        <div className="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden flex flex-col animate-in slide-in-from-right-8 duration-300 min-h-[700px] h-[calc(100vh-6rem)]">
+          {/* Compose Header & Wizard Stepper */}
+          <div className="border-b border-slate-100 p-6 flex justify-between items-center bg-slate-50 relative">
+            <div className="flex items-center gap-4">
+              <div className="bg-white p-2 rounded-md shadow-sm border border-slate-200">
+                <Mail className="w-6 h-6 text-slate-700" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-slate-900">Campaign Wizard</h2>
+                <p className="text-sm text-slate-500">Targeted outreach with Brevo delivery.</p>
+              </div>
+            </div>
+            
+            {/* Stepper Center */}
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center hidden md:flex">
+              <div className={`flex items-center gap-2 ${composeStep >= 1 ? 'text-slate-900' : 'text-slate-400'}`}>
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${composeStep >= 1 ? 'bg-slate-900 text-white' : 'bg-slate-200'}`}>1</div>
+                <span className="text-sm font-semibold">Setup</span>
+              </div>
+              <div className={`w-12 h-px mx-4 ${composeStep >= 2 ? 'bg-slate-900' : 'bg-slate-200'}`} />
+              <div className={`flex items-center gap-2 ${composeStep >= 2 ? 'text-slate-900' : 'text-slate-400'}`}>
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${composeStep >= 2 ? 'bg-slate-900 text-white' : 'bg-slate-200'}`}>2</div>
+                <span className="text-sm font-semibold">Design</span>
+              </div>
+              <div className={`w-12 h-px mx-4 ${composeStep >= 3 ? 'bg-slate-900' : 'bg-slate-200'}`} />
+              <div className={`flex items-center gap-2 ${composeStep >= 3 ? 'text-slate-900' : 'text-slate-400'}`}>
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${composeStep >= 3 ? 'bg-slate-900 text-white' : 'bg-slate-200'}`}>3</div>
+                <span className="text-sm font-semibold">Audience</span>
+              </div>
+            </div>
+
+            <button onClick={() => setView('dashboard')} className="p-2 text-slate-400 hover:text-slate-600 transition-colors">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          <div className="flex-1 p-8 bg-white overflow-y-auto">
+            {composeStep === 1 && (
+              <div className="max-w-2xl mx-auto space-y-8 animate-in fade-in slide-in-from-right-4">
+                <div className="text-center mb-8">
+                  <h3 className="text-2xl font-bold text-slate-900">Campaign Details</h3>
+                  <p className="text-slate-500 mt-2">Let's start by giving your campaign a name and subject.</p>
+                </div>
+                
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-slate-700">Internal Campaign Name</label>
+                    <input 
+                      type="text" 
+                      value={campaignName}
+                      onChange={e => setCampaignName(e.target.value)}
+                      placeholder="e.g. Q1 Fund II Performance Note" 
+                      className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-slate-900 outline-none transition-all"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-slate-700">Email Subject Line</label>
+                    <input 
+                      type="text" 
+                      value={subject}
+                      onChange={e => setSubject(e.target.value)}
+                      placeholder="Exclusive Update for {{organization}}" 
+                      className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-slate-900 outline-none transition-all"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-slate-700">From Sender Name</label>
+                    <input 
+                      type="text" 
+                      value={sender}
+                      onChange={e => setSender(e.target.value)}
+                      placeholder="e.g. Investor Relations"
+                      className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-slate-900 outline-none transition-all"
+                    />
+                    <p className="text-xs text-slate-400 mt-1">Emails will be sent from the verified Brevo sender configured in your Settings.</p>
+                  </div>
+                </div>
+
+                <div className="pt-6 flex justify-end">
+                  <button 
+                    onClick={() => setComposeStep(2)}
+                    disabled={!campaignName || !subject || !sender}
+                    className="px-8 py-3 bg-slate-900 text-white rounded-xl font-medium text-sm hover:bg-slate-800 disabled:opacity-50 transition-all shadow-sm flex items-center gap-2"
+                  >
+                    Next: Design Email &rarr;
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {composeStep === 2 && (
+              <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-right-4">
+                 <div className="flex items-center justify-between mb-6">
+                    <div>
+                      <h3 className="text-xl font-bold text-slate-900">Design Email Body</h3>
+                      <p className="text-slate-500 text-sm mt-1">Use the rich text editor below. Insert tags to personalize content for each recipient.</p>
+                    </div>
+                 </div>
+                 
+                 <RichTextEditor value={body} onChange={setBody} tags={tags} />
+
+                 <div className="mt-8 flex justify-between">
+                  <button 
+                    onClick={() => setComposeStep(1)}
+                    className="px-6 py-3 border border-slate-200 text-slate-700 rounded-xl font-medium text-sm hover:bg-slate-50 transition-all"
+                  >
+                    &larr; Back to Setup
+                  </button>
+                  <button 
+                    onClick={() => setComposeStep(3)}
+                    disabled={!body}
+                    className="px-8 py-3 bg-slate-900 text-white rounded-xl font-medium text-sm hover:bg-slate-800 disabled:opacity-50 transition-all shadow-sm"
+                  >
+                    Next: Select Audience &rarr;
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {composeStep === 3 && (
+              <div className="max-w-5xl mx-auto flex flex-col lg:flex-row gap-8 animate-in fade-in slide-in-from-right-4 h-[550px]">
+                {/* Left: Audience Selector */}
+                <div className="flex-1 flex flex-col h-full bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                  <div className="p-4 border-b border-slate-100 bg-slate-50">
+                    <h3 className="font-bold text-slate-900">Select Recipients</h3>
+                  </div>
+                  
+                  <div className="p-4 space-y-4 border-b border-slate-100">
+                    <div className="flex gap-4">
+                      <select 
+                        value={typeFilter}
+                        onChange={(e) => setTypeFilter(e.target.value)}
+                        className="flex-1 text-sm border border-slate-200 rounded-lg py-2 px-3 outline-none focus:ring-1 focus:ring-slate-900"
+                      >
+                        <option value="All Types">All Types</option>
+                        {settings.investorTypes?.map((t: string) => <option key={t} value={t}>{t}</option>)}
+                      </select>
+                      <select 
+                        value={stageFilter}
+                        onChange={(e) => setStageFilter(e.target.value)}
+                        className="flex-1 text-sm border border-slate-200 rounded-lg py-2 px-3 outline-none focus:ring-1 focus:ring-slate-900"
+                      >
+                        <option value="All Stages">All Stages</option>
+                        {settings.leadStages?.map((s: string) => <option key={s} value={s}>{s}</option>)}
+                      </select>
+                    </div>
+                    <input 
+                      type="text" 
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Search name or email..."
+                      className="w-full text-sm border border-slate-200 rounded-lg py-2 px-3 outline-none focus:ring-1 focus:ring-slate-900"
+                    />
+                    <div className="flex justify-between items-center mt-2">
+                      <span className="text-xs font-semibold text-slate-500">{filteredLeads.length} Matching Leads</span>
+                      <div className="flex gap-3 text-xs">
+                        <button onClick={handleSelectAll} className="font-medium text-slate-900 hover:underline">Select All</button>
+                        <button onClick={() => setSelectedLeads(new Set())} className="text-slate-500 hover:underline">Clear</button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex-1 overflow-y-auto bg-slate-50 p-2">
+                    {filteredLeads.length === 0 ? (
+                      <div className="text-center p-8 text-slate-400 text-sm">No leads match filters.</div>
+                    ) : (
+                      <ul className="space-y-1">
+                        {filteredLeads.map(lead => (
+                          <li 
+                            key={lead.id} 
+                            onClick={() => toggleLead(lead.id)}
+                            className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${selectedLeads.has(lead.id) ? 'bg-white border-slate-900 shadow-sm' : 'bg-transparent border-transparent hover:bg-slate-200/50'}`}
                           >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </td>
-                      </tr>
-                    ))
-                  )}
+                            <input 
+                              type="checkbox" 
+                              checked={selectedLeads.has(lead.id)} 
+                              onChange={() => {}} 
+                              className="rounded border-slate-300 text-slate-900 focus:ring-slate-900 w-4 h-4"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-semibold text-slate-900 truncate">{lead.firstName} {lead.lastName}</p>
+                              <p className="text-xs text-slate-500 truncate">{lead.email} &middot; {lead.organization}</p>
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </div>
+
+                {/* Right: Review & Send */}
+                <div className="w-[350px] flex flex-col gap-6">
+                  <div className="bg-slate-900 text-white rounded-xl p-6 shadow-xl">
+                    <h3 className="text-lg font-bold mb-2">Ready to Send?</h3>
+                    <p className="text-slate-400 text-sm mb-6">You are about to dispatch this campaign. Ensure your Brevo API Key is valid in settings.</p>
+                    
+                    <div className="space-y-4 mb-8">
+                      <div className="flex justify-between items-center border-b border-slate-800 pb-2">
+                        <span className="text-slate-400 text-sm">Recipients</span>
+                        <span className="font-bold">{selectedLeads.size} leads</span>
+                      </div>
+                      <div className="flex justify-between items-center border-b border-slate-800 pb-2">
+                        <span className="text-slate-400 text-sm">Sender Name</span>
+                        <span className="font-bold truncate max-w-[150px]">{sender}</span>
+                      </div>
+                      <div className="flex justify-between items-center border-b border-slate-800 pb-2">
+                        <span className="text-slate-400 text-sm">Subject</span>
+                        <span className="font-bold truncate max-w-[150px]" title={subject}>{subject}</span>
+                      </div>
+                    </div>
+
+                    <button 
+                      onClick={sendCampaign}
+                      disabled={isSending || selectedLeads.size === 0}
+                      className="w-full py-3.5 bg-white text-slate-900 rounded-xl font-bold text-sm hover:bg-slate-100 disabled:opacity-75 disabled:cursor-wait transition-all shadow-xl"
+                    >
+                      {isSending ? `Sending... ${sendProgress.current}/${sendProgress.total}` : "🚀 Launch Campaign"}
+                    </button>
+                  </div>
+
+                  <button 
+                    onClick={() => setComposeStep(2)}
+                    className="self-center px-6 py-2 text-slate-500 hover:text-slate-900 font-medium text-sm transition-all"
+                  >
+                    &larr; Back to Design
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
                 </tbody>
               </table>
             </div>
@@ -570,6 +780,46 @@ function MetricCard({ icon, title, value, sub, valueColor = "text-slate-900" }: 
         <h3 className={`text-3xl font-bold mb-1 ${valueColor}`}>{value}</h3>
         <p className="text-xs text-slate-500">{sub}</p>
       </div>
+    </div>
+  );
+}
+
+function RichTextEditor({ value, onChange, tags }: { value: string, onChange: (v: string) => void, tags: {tag: string, label: string}[] }) { 
+  const editorRef = useRef<HTMLDivElement>(null); 
+  
+  useEffect(() => { 
+    if (editorRef.current && !editorRef.current.innerHTML) {
+      editorRef.current.innerHTML = value; 
+    }
+  }, []); 
+
+  const exec = (cmd: string, val: string | undefined = undefined) => { 
+    document.execCommand(cmd, false, val); 
+    editorRef.current?.focus(); 
+    onChange(editorRef.current?.innerHTML || ''); 
+  }; 
+
+  return (
+    <div className="border border-slate-200 rounded-xl overflow-hidden flex flex-col bg-white shadow-sm">
+      <div className="flex flex-wrap items-center gap-1 p-2 border-b border-slate-100 bg-slate-50">
+        <button onClick={() => exec('bold')} className="w-8 h-8 flex items-center justify-center hover:bg-slate-200 rounded text-slate-700 font-bold transition-all">B</button>
+        <button onClick={() => exec('italic')} className="w-8 h-8 flex items-center justify-center hover:bg-slate-200 rounded text-slate-700 italic font-serif transition-all">I</button>
+        <button onClick={() => exec('underline')} className="w-8 h-8 flex items-center justify-center hover:bg-slate-200 rounded text-slate-700 underline transition-all">U</button>
+        <div className="w-px h-5 bg-slate-300 mx-1" />
+        <button onClick={() => exec('insertUnorderedList')} className="px-3 h-8 flex items-center justify-center hover:bg-slate-200 rounded text-slate-700 text-xs font-medium transition-all">List</button>
+        <button onClick={() => { const url = prompt('Enter URL'); if (url) exec('createLink', url); }} className="px-3 h-8 flex items-center justify-center hover:bg-slate-200 rounded text-slate-700 text-xs font-medium transition-all">Link</button>
+        <div className="w-px h-5 bg-slate-300 mx-1" />
+        <select onChange={(e) => { if(e.target.value) exec('insertText', e.target.value); e.target.value = ''; }} className="h-8 px-2 text-xs border border-slate-200 rounded bg-white text-slate-600 outline-none hover:border-slate-300 cursor-pointer">
+          <option value="">✨ Insert Tag...</option>
+          {tags.map(t => (<option key={t.tag} value={t.tag}>{t.label}</option>))}
+        </select>
+      </div>
+      <div 
+        ref={editorRef} 
+        contentEditable 
+        onInput={() => onChange(editorRef.current?.innerHTML || '')} 
+        className="p-6 min-h-[400px] outline-none prose prose-sm prose-slate max-w-none focus:bg-slate-50/30 transition-colors"
+      />
     </div>
   );
 }
