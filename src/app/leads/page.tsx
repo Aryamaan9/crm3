@@ -293,8 +293,8 @@ export default function LeadsPage() {
       case 'org': return lead.organization;
       case 'type': return lead.investorType;
       case 'stage': return lead.leadStage;
-      case 'interaction': return lead.lastInteraction ? format(lead.lastInteraction.toDate(), "MMM d, yyyy") : "-";
-      case 'followup': return lead.followUpDate ? format(lead.followUpDate.toDate(), "MMM d, yyyy") : "-";
+      case 'interaction': return lead.lastInteraction ? format(typeof lead.lastInteraction.toDate === 'function' ? lead.lastInteraction.toDate() : new Date(lead.lastInteraction), "MMM d, yyyy") : "-";
+      case 'followup': return lead.followUpDate ? format(typeof lead.followUpDate.toDate === 'function' ? lead.followUpDate.toDate() : new Date(lead.followUpDate), "MMM d, yyyy") : "-";
       case 'owner': return lead.primaryOwner === user?.uid ? "Me" : "Other User";
       case 'country': return lead.country || "-";
       default: return lead[colId] || ""; 
