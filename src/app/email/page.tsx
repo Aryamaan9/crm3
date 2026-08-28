@@ -142,6 +142,7 @@ export default function EmailModule() {
         // Prepare message versions for bulk personalized sending
         const messageVersions = batchLeads.map((lead: any) => ({
           to: [{ email: lead.email, name: `${lead.firstName || ''} ${lead.lastName || ''}`.trim() }],
+          subject: brevoSubject,
           params: {
             first_name: lead.firstName || '',
             last_name: lead.lastName || '',
@@ -162,14 +163,15 @@ export default function EmailModule() {
           },
           body: JSON.stringify({
             sender: { email: settings.emailConfig.senderEmail || 'ir@moneystories.in', name: sender || 'CRM' },
-            subject: brevoSubject,
             htmlContent: brevoHtml,
             messageVersions
           })
         });
         
         if (!res.ok) {
-          throw new Error('Failed to send batch');
+          const errorText = await res.text();
+          console.error("Brevo API Error:", errorText);
+          throw new Error(`Brevo Error: ${errorText}`);
         }
         
         sentCount += batchLeads.length;
@@ -194,8 +196,9 @@ export default function EmailModule() {
       setSubject("");
       setSelectedLeads(new Set());
       await fetchCampaigns();
-    } catch (err) {
-      toast.error("Failed to send campaign. Please check your Brevo settings.");
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message || "Failed to send campaign.");
     } finally {
       setIsSending(false);
     }
