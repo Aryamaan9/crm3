@@ -25,7 +25,7 @@ const TAGS = [
 export function EmailComposer({ onClose, selectedLeads, leadsData, settings, recordCampaign }: EmailComposerProps) {
   const [campaignName, setCampaignName] = useState("");
   const [senderName, setSenderName] = useState("Investor Relations");
-  const [senderEmail, setSenderEmail] = useState("info@moneystories.in");
+  const [senderEmail, setSenderEmail] = useState(settings?.emailConfig?.senderEmail || "info@moneystories.in");
   const [subject, setSubject] = useState("");
   const [body, setBody] = useState("<p>Dear {{first_name}},</p><p><br></p><p>We have a new update for <strong>{{organization}}</strong>.</p><p><br></p><p>Warm regards,<br>The Team</p>");
   
@@ -44,7 +44,7 @@ export function EmailComposer({ onClose, selectedLeads, leadsData, settings, rec
   });
 
   const handleSend = async () => {
-    if (!settings?.emailConfig?.brevoApiKey) {
+    if (!settings?.emailConfig?.apiKey) {
       return toast.error("Brevo API Key is missing in Global Settings.");
     }
     if (!campaignName || !subject || !body) {
@@ -96,7 +96,7 @@ export function EmailComposer({ onClose, selectedLeads, leadsData, settings, rec
         const res = await fetch('https://api.brevo.com/v3/smtp/email', {
           method: 'POST',
           headers: {
-            'api-key': settings.emailConfig.brevoApiKey,
+            'api-key': settings.emailConfig.apiKey,
             'Content-Type': 'application/json',
             'accept': 'application/json'
           },
@@ -238,13 +238,13 @@ export function EmailComposer({ onClose, selectedLeads, leadsData, settings, rec
           {/* Action Bar */}
           <div className="p-6 border-t border-slate-200 bg-white flex items-center justify-between shrink-0">
             <div className="text-xs text-slate-500 flex items-center gap-2">
-              {!settings?.emailConfig?.brevoApiKey && (
+              {!settings?.emailConfig?.apiKey && (
                 <span className="text-red-500 flex items-center gap-1"><AlertCircle className="w-4 h-4" /> Brevo API Key missing</span>
               )}
             </div>
             <button 
               onClick={handleSend}
-              disabled={isSending || !settings?.emailConfig?.brevoApiKey}
+              disabled={isSending || !settings?.emailConfig?.apiKey}
               className="px-8 py-3 bg-slate-900 text-white rounded-xl font-bold text-sm hover:bg-slate-800 disabled:opacity-50 transition-all shadow-xl flex items-center gap-2"
             >
               {isSending ? (

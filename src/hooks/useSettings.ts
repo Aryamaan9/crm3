@@ -8,7 +8,8 @@ export interface GlobalSettings {
   investorTypes: string[];
   customFields: any[];
   emailConfig?: {
-    brevoApiKey?: string;
+    apiKey?: string;
+    senderEmail?: string;
   };
 }
 
