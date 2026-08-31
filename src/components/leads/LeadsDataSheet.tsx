@@ -1,15 +1,20 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef, useEffect } from 'react';
 import { DataSheetGrid, textColumn, keyColumn, isoDateColumn } from 'react-datasheet-grid';
 import 'react-datasheet-grid/dist/style.css';
-import { Timestamp, doc, updateDoc, addDoc, deleteDoc, collection } from 'firebase/firestore';
+import { Timestamp, doc, updateDoc, setDoc, deleteDoc, collection } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import toast from 'react-hot-toast';
 import { useAuth } from '@/context/AuthContext';
 
 export function LeadsDataSheet({ leads, setLeads, columns, settings }: any) {
   const { user } = useAuth();
+  const leadsRef = useRef(leads);
   
-  // Map internal grid column shorthands to actual Firestore field names
+  // Keep ref in sync to avoid stale closures during rapid cell edits
+  useEffect(() => {
+    leadsRef.current = leads;
+  }, [leads]);
+  
   const FIELD_MAP: Record<string, string> = {
     'org': 'organization',
     'type': 'investorType',
@@ -19,17 +24,13 @@ export function LeadsDataSheet({ leads, setLeads, columns, settings }: any) {
     'owner': 'primaryOwner'
   };
 
-  // Transform columns into react-datasheet-grid columns
   const gridColumns = useMemo(() => {
     return columns.filter((c: any) => c.visible).map((c: any) => {
       let colType = textColumn;
       const fieldKey = FIELD_MAP[c.id] || c.id;
-      
-      // Determine if it's a date
       if (fieldKey === 'followUpDate' || fieldKey === 'lastInteraction') {
         colType = isoDateColumn;
       }
-
       return {
         ...keyColumn(fieldKey, colType),
         title: c.label,
@@ -38,8 +39,6 @@ export function LeadsDataSheet({ leads, setLeads, columns, settings }: any) {
     });
   }, [columns]);
 
-  // Transform leads data for the grid
-  // Firebase timestamps need to be converted to date strings for isoDateColumn
   const gridData = useMemo(() => {
     return leads.map((lead: any) => {
       const row = { ...lead };
@@ -53,17 +52,27 @@ export function LeadsDataSheet({ leads, setLeads, columns, settings }: any) {
     });
   }, [leads]);
 
-  // Handle updates
   const handleChange = async (newData: any[]) => {
-    const oldLeads = [...leads];
+    const oldLeads = leadsRef.current;
     const promises: any[] = [];
     const updatedLeads: any[] = [];
     let hasError = false;
 
-    // 1. Detect and handle deletions
-    const newIds = new Set(newData.map(n => n.id).filter(Boolean));
-    oldLeads.forEach(oldLead => {
-      if (!newIds.has(oldLead.id)) {
+    // Deduplicate IDs (Fixes bug where drag-to-fill copies the row ID)
+    const seenIds = new Set<string>();
+    const deduplicatedData = newData.map(row => {
+      if (row.id && seenIds.has(row.id)) {
+        // Strip duplicate ID to treat as a new row
+        const { id, ...rest } = row;
+        return rest;
+      }
+      if (row.id) seenIds.add(row.id);
+      return row;
+    });
+
+    // 1. Detect deletions
+    oldLeads.forEach((oldLead: any) => {
+      if (!seenIds.has(oldLead.id)) {
         promises.push(
           deleteDoc(doc(db, "leads", oldLead.id)).catch(e => {
             console.error("Failed to delete doc", e);
@@ -73,14 +82,16 @@ export function LeadsDataSheet({ leads, setLeads, columns, settings }: any) {
       }
     });
 
-    // 2. Process new or updated rows
-    for (let i = 0; i < newData.length; i++) {
-      const newRow = newData[i];
+    // 2. Process rows
+    for (let i = 0; i < deduplicatedData.length; i++) {
+      const newRow = deduplicatedData[i];
       
       if (!newRow.id) {
-        // It's a new row!
+        // Generate ID immediately client-side to prevent race conditions
+        const newDocRef = doc(collection(db, "leads"));
         const newDocData = {
           ...newRow,
+          id: newDocRef.id,
           leadStage: newRow.leadStage || settings?.leadStages?.[0] || 'New',
           investorType: newRow.investorType || settings?.investorTypes?.[0] || 'Unknown',
           lastInteraction: Timestamp.now(),
@@ -88,18 +99,14 @@ export function LeadsDataSheet({ leads, setLeads, columns, settings }: any) {
           createdAt: Timestamp.now()
         };
         
-        // Remove undefined fields
         Object.keys(newDocData).forEach(key => newDocData[key] === undefined && delete newDocData[key]);
         
-        updatedLeads.push(newDocData); // Optimistic ID will be missing, we update it after
+        updatedLeads.push(newDocData);
         promises.push(
-          addDoc(collection(db, "leads"), newDocData).then(ref => {
-            newDocData.id = ref.id;
-          })
+          setDoc(newDocRef, newDocData).catch(() => { hasError = true; })
         );
       } else {
-        // Existing row, locate it in oldLeads by ID
-        const oldRow = oldLeads.find(l => l.id === newRow.id);
+        const oldRow = oldLeads.find((l: any) => l.id === newRow.id);
         if (!oldRow) {
            updatedLeads.push(newRow);
            continue; 
@@ -111,7 +118,6 @@ export function LeadsDataSheet({ leads, setLeads, columns, settings }: any) {
         Object.keys(newRow).forEach(key => {
           if (key === 'id') return;
           if (newRow[key] !== oldRow[key]) {
-             // Basic date handling
              if (key === 'followUpDate' || key === 'lastInteraction') {
                 if (newRow[key] && typeof newRow[key] === 'string') {
                    const d = new Date(newRow[key]);
@@ -127,7 +133,6 @@ export function LeadsDataSheet({ leads, setLeads, columns, settings }: any) {
           }
         });
         
-        // Push optimistic
         const updatedRow = { ...oldRow, ...updates };
         updatedLeads.push(updatedRow);
         
@@ -140,14 +145,14 @@ export function LeadsDataSheet({ leads, setLeads, columns, settings }: any) {
       }
     }
     
-    // Set leads optimistically
+    // Set leads optimistically synchronously
     setLeads(updatedLeads);
     
     if (promises.length > 0) {
       toast.promise(Promise.all(promises), {
-        loading: 'Saving...',
-        success: 'Saved successfully',
-        error: 'Error saving data'
+        loading: 'Saving changes...',
+        success: 'Sync successful',
+        error: 'Error syncing some cells'
       });
     }
   };

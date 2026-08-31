@@ -36,6 +36,16 @@ test.describe('Excel Mode & Data Sync', () => {
     
     // The datasheet grid has standard classes. We can verify columns.
     await expect(page.locator('text=Organization').first()).toBeVisible();
-    await expect(page.locator('text=Lead Stage').first()).toBeVisible();
+    
+    // Simulate typing in the first cell of a new row
+    // In react-datasheet-grid, clicking a cell activates it
+    // Wait for the grid rows
+    const firstRowCell = page.locator('.dsg-cell').nth(1); 
+    await firstRowCell.click();
+    await page.keyboard.type('Test Org Sync');
+    await page.keyboard.press('Enter');
+
+    // Verify it triggers a save toast
+    await expect(page.locator('text=Sync successful')).toBeVisible({ timeout: 15000 });
   });
 });

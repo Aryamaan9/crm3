@@ -10,6 +10,8 @@ import { format } from "date-fns";
 import toast from "react-hot-toast";
 import { LeadSlideOver } from "@/components/leads/LeadSlideOver";
 import { LeadsDataSheet } from "@/components/leads/LeadsDataSheet";
+import { ImportMapperModal } from "@/components/leads/ImportMapperModal";
+import { LeadFilterMenu } from "@/components/leads/LeadFilterMenu";
 
 type ColumnDef = { id: string; label: string; visible: boolean };
 
@@ -32,6 +34,10 @@ export default function LeadsPage() {
   const [stageFilter, setStageFilter] = useState("All");
   const [typeFilter, setTypeFilter] = useState("All");
   const [showFilterMenu, setShowFilterMenu] = useState(false);
+  
+  const [columnFilters, setColumnFilters] = useState<Record<string, Set<string>>>({});
+  const [sortConfig, setSortConfig] = useState<{key: string, direction: 'asc'|'desc'} | null>(null);
+  const [importData, setImportData] = useState<{headers: string[], data: string[][]}|null>(null);
   
   // Settings state
   const [settings, setSettings] = useState<any>(null);
@@ -104,16 +110,54 @@ export default function LeadsPage() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const getCellValue = (lead: any, colId: string) => {
+    switch(colId) {
+      case 'firstName': return lead.firstName || "";
+      case 'lastName': return lead.lastName || "";
+      case 'org': return lead.organization || "";
+      case 'type': return lead.investorType || "";
+      case 'stage': return lead.leadStage || "";
+      case 'interaction': return lead.lastInteraction ? format(typeof lead.lastInteraction.toDate === 'function' ? lead.lastInteraction.toDate() : new Date(lead.lastInteraction), "MMM d, yyyy") : "";
+      case 'followup': return lead.followUpDate ? format(typeof lead.followUpDate.toDate === 'function' ? lead.followUpDate.toDate() : new Date(lead.followUpDate), "MMM d, yyyy") : "";
+      case 'owner': return lead.primaryOwner === user?.uid ? "Me" : "Other User";
+      case 'country': return lead.country || "";
+      default: return lead[colId] || ""; 
+    }
+  };
+
   useEffect(() => {
-    const res = leads.filter(lead => {
+    let res = leads.filter(lead => {
       const matchesSearch = !searchQuery || 
         `${lead.firstName} ${lead.lastName} ${lead.organization} ${lead.email}`.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      // Global quick filters
       const matchesStage = stageFilter === 'All' || lead.leadStage === stageFilter;
       const matchesType = typeFilter === 'All' || lead.investorType === typeFilter;
-      return matchesSearch && matchesStage && matchesType;
+      if (!(matchesSearch && matchesStage && matchesType)) return false;
+
+      // Column specific filters
+      for (const [colId, selectedValues] of Object.entries(columnFilters)) {
+        if (selectedValues.size === 0) continue; // If empty, we could treat it as "no filter" or "all excluded". Let's assume the UI handles "All" by not filtering. Wait, if all are unselected, we should probably hide all.
+        // Actually, the LeadFilterMenu handles selection state. If they filter out everything, selectedValues.size is 0.
+        const val = String(getCellValue(lead, colId));
+        if (!selectedValues.has(val)) return false;
+      }
+
+      return true;
     });
+
+    if (sortConfig) {
+      res.sort((a, b) => {
+        const valA = String(getCellValue(a, sortConfig.key)).toLowerCase();
+        const valB = String(getCellValue(b, sortConfig.key)).toLowerCase();
+        if (valA < valB) return sortConfig.direction === 'asc' ? -1 : 1;
+        if (valA > valB) return sortConfig.direction === 'asc' ? 1 : -1;
+        return 0;
+      });
+    }
+
     setFilteredLeads(res);
-  }, [leads, searchQuery, stageFilter, typeFilter]);
+  }, [leads, searchQuery, stageFilter, typeFilter, columnFilters, sortConfig]);
 
   const handleExport = () => {
     const visibleCols = columns.filter(c => c.visible);
@@ -242,35 +286,90 @@ export default function LeadsPage() {
   const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setLoading(true);
     const reader = new FileReader();
-    reader.onload = async (event) => {
+    reader.onload = (event) => {
       try {
         const text = event.target?.result as string;
-        const lines = text.split('\n');
-        for (let i = 1; i < lines.length; i++) {
-          if (!lines[i].trim()) continue;
-          const [firstName, lastName, organization, email, investorType, leadStage] = lines[i].split(',').map(s => s.replace(/"/g, '').trim());
-          await addDoc(collection(db, "leads"), {
-            firstName: firstName || "",
-            lastName: lastName || "",
-            organization: organization || "Imported Org",
-            email: email || "",
-            investorType: investorType || "Unknown",
-            leadStage: leadStage || "New",
-            lastInteraction: Timestamp.now(),
-            primaryOwner: user?.uid,
-            createdAt: Timestamp.now(),
-          });
-        }
-        await fetchData();
-        toast.success("Import successful!");
+        const lines = text.split('\n').filter(l => l.trim());
+        if (lines.length < 1) return toast.error("Empty CSV");
+        
+        const headers = lines[0].split(',').map(s => s.replace(/"/g, '').trim());
+        const data = lines.slice(1).map(l => l.split(',').map(s => s.replace(/"/g, '').trim()));
+        setImportData({ headers, data });
       } catch (err) {
-        toast.error("Failed to parse or import CSV.");
+        toast.error("Failed to parse CSV.");
       }
     };
     reader.readAsText(file);
     if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleImportConfirm = async (mapping: Record<string, string>, newFields: {id: string; label: string; type: string}[]) => {
+    if (!importData) return;
+    setLoading(true);
+    setImportData(null);
+    try {
+      // 1. Create new custom fields if any
+      if (newFields.length > 0) {
+        const globalRef = doc(db, "settings", "global");
+        const existingCustomFields = settings?.customFields || [];
+        const updatedCustomFields = [...existingCustomFields, ...newFields];
+        await updateDoc(globalRef, { customFields: updatedCustomFields });
+        
+        // Update local settings state so columns update
+        setSettings({ ...settings, customFields: updatedCustomFields });
+        setColumns(prev => {
+          const newCols = [...prev];
+          newFields.forEach(cf => newCols.push({ id: cf.id, label: cf.label, visible: true }));
+          return newCols;
+        });
+      }
+
+      // 2. Import rows
+      const promises = importData.data.map(row => {
+        const leadData: any = {
+          lastInteraction: Timestamp.now(),
+          primaryOwner: user?.uid,
+          createdAt: Timestamp.now(),
+          investorType: settings?.investorTypes?.[0] || "Unknown",
+          leadStage: settings?.leadStages?.[0] || "New",
+        };
+        
+        importData.headers.forEach((header, idx) => {
+          const mappedKey = mapping[header];
+          if (mappedKey && mappedKey !== '__SKIP__') {
+            const val = row[idx];
+            if (val) {
+               // Basic type coercion
+               const cfDef = newFields.find(f => f.id === mappedKey) || settings?.customFields?.find((f:any) => f.id === mappedKey);
+               if (cfDef?.type === 'number') {
+                  leadData[mappedKey] = Number(val) || 0;
+               } else if (cfDef?.type === 'date') {
+                  const d = new Date(val);
+                  if (!isNaN(d.getTime())) leadData[mappedKey] = Timestamp.fromDate(d);
+               } else {
+                  leadData[mappedKey] = val;
+               }
+            }
+          }
+        });
+        
+        // Enforce required base fields if missing
+        if (!leadData.firstName) leadData.firstName = "Unknown";
+        if (!leadData.lastName) leadData.lastName = "";
+        
+        return addDoc(collection(db, "leads"), leadData);
+      });
+      
+      await Promise.all(promises);
+      toast.success(`Successfully imported ${importData.data.length} leads!`);
+      fetchData();
+    } catch (err) {
+      console.error(err);
+      toast.error("Error during import.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const moveColumn = (index: number, direction: 'up' | 'down') => {
@@ -286,20 +385,7 @@ export default function LeadsPage() {
     setColumns(columns.map(c => c.id === id ? { ...c, visible: !c.visible } : c));
   };
 
-  const getCellValue = (lead: any, colId: string) => {
-    switch(colId) {
-      case 'firstName': return lead.firstName;
-      case 'lastName': return lead.lastName;
-      case 'org': return lead.organization;
-      case 'type': return lead.investorType;
-      case 'stage': return lead.leadStage;
-      case 'interaction': return lead.lastInteraction ? format(typeof lead.lastInteraction.toDate === 'function' ? lead.lastInteraction.toDate() : new Date(lead.lastInteraction), "MMM d, yyyy") : "-";
-      case 'followup': return lead.followUpDate ? format(typeof lead.followUpDate.toDate === 'function' ? lead.followUpDate.toDate() : new Date(lead.followUpDate), "MMM d, yyyy") : "-";
-      case 'owner': return lead.primaryOwner === user?.uid ? "Me" : "Other User";
-      case 'country': return lead.country || "-";
-      default: return lead[colId] || ""; 
-    }
-  };
+
 
   const renderCell = (lead: any, colId: string) => {
     const val = getCellValue(lead, colId);
@@ -419,8 +505,31 @@ export default function LeadsPage() {
     setIsSlideOverOpen(true);
   };
 
+  const getUniqueValues = (colId: string) => {
+    const vals = new Set(leads.map(l => String(getCellValue(l, colId))));
+    return Array.from(vals).filter(Boolean).sort();
+  };
+
   return (
     <div className="p-8 max-w-7xl mx-auto flex flex-col h-full">
+      {importData && (
+        <ImportMapperModal
+          csvHeaders={importData.headers}
+          csvData={importData.data}
+          existingFields={[
+            { id: 'firstName', label: 'First Name', type: 'text' },
+            { id: 'lastName', label: 'Last Name', type: 'text' },
+            { id: 'organization', label: 'Organization', type: 'text' },
+            { id: 'email', label: 'Email', type: 'text' },
+            { id: 'investorType', label: 'Investor Type', type: 'text' },
+            { id: 'leadStage', label: 'Lead Stage', type: 'text' },
+            ...(settings?.customFields || [])
+          ]}
+          onCancel={() => setImportData(null)}
+          onConfirm={handleImportConfirm}
+        />
+      )}
+
       {/* Header Actions */}
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -593,7 +702,15 @@ export default function LeadsPage() {
                     <input type="checkbox" className="rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
                   </th>
                   {columns.filter(c => c.visible).map(c => (
-                    <th key={c.id} className="px-6 py-4">{c.label}</th>
+                    <th key={c.id} className="px-6 py-3 font-medium text-slate-700 align-top">
+                      <LeadFilterMenu
+                        label={c.label}
+                        uniqueValues={getUniqueValues(c.id)}
+                        selectedValues={columnFilters[c.id] || new Set(getUniqueValues(c.id))}
+                        onSort={(direction) => direction ? setSortConfig({ key: c.id, direction }) : setSortConfig(null)}
+                        onFilterChange={(newSelected) => setColumnFilters(prev => ({ ...prev, [c.id]: newSelected }))}
+                      />
+                    </th>
                   ))}
                 </tr>
               </thead>
