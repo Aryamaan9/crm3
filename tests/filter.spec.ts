@@ -28,14 +28,13 @@ test.describe('Excel-like Header Filters', () => {
   test('2. Filter Leads Table', async () => {
     await page.goto('/leads');
     
-    // Add a lead first to ensure we have data
-    await page.click('button:has-text("New Lead")');
-    await page.fill('input[placeholder="First Name"]', 'FilterTest');
-    await page.fill('input[placeholder="Last Name"]', 'User');
-    await page.fill('input[placeholder="Organization"]', 'TestOrg');
-    await page.click('button:has-text("Add Lead"):visible');
+    await page.getByRole('button', { name: 'New Lead' }).click();
+    await page.locator('.fixed.inset-0 label:has-text("First Name") + input').fill('FilterTest');
+    await page.locator('.fixed.inset-0 label:has-text("Last Name") + input').fill('User');
+    await page.locator('.fixed.inset-0 label:has-text("Organization") + input').fill('TestOrg');
+    await page.getByRole('button', { name: 'Save Lead' }).click();
     
-    await expect(page.locator('text=Lead added successfully')).toBeVisible();
+    await expect(page.locator('text=Lead created successfully')).toBeVisible();
 
     // Verify lead is in table
     await expect(page.locator('td:has-text("FilterTest")')).toBeVisible();
